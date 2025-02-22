@@ -12,6 +12,8 @@ class ServerProcessManager:
     def __enter__(self):
         try:
             print("Lean server launching...")
+            # Start Lean server subprocess with redirected I/O
+            # Using 'lake serve' command with LeanProject directory as working directory
             self.process = subprocess.Popen(
                 ["lake", "serve", "--"],
                 cwd=str(pathlib.Path(__file__).parent / 'LeanProject'),
@@ -19,13 +21,15 @@ class ServerProcessManager:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
+            # Validate pipe creation to prevent silent failures
             if self.process.stdin is None or self.process.stdout is None:
                 raise RuntimeError("Failed to get stdin or stdout from the Lean server process.")
             print("Lean server Launched.")
             return self.process
         except Exception as e:
+            # Handle any startup failures and ensure clean exit
             print(f"Launching lean server failed: {e}", file=sys.stderr)
-            raise
+            raise  # Re-raise exception to abort context manager
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.process:
@@ -73,6 +77,7 @@ def getRpcSession(lspClient: LspClient, fileUri: str) -> str:
     response = lspClient.lsp_endpoint.call_method("$/lean/rpc/connect", uri=fileUri)
     print("getRpcSession response:", response)
     return response['sessionId']
+
 # 递归处理TaggedText结构
 def process_tagged_text(tagged):
     """递归处理TaggedText结构，将其转化为可阅读的字符串"""
@@ -152,6 +157,16 @@ def to_uri(path: pathlib.Path) -> str:
     """Convert a path to a URI."""
     return str(path.absolute().as_uri())
 
+def getTextChanges(oldText: list[str], newText: list[str]) -> object:
+    range = {
+        'start': {'line': 0, 'character': 0},  
+        'end': {'line': len(oldText), 'character': 0}
+    }
+    return [{
+        'range': range,
+        'text': ''.join(newText)
+    }]
+
 def main():
     root_path = pathlib.Path(__file__).parent / 'LeanProject'
     root_uri = to_uri(root_path)
@@ -159,12 +174,13 @@ def main():
         with LspClientManager(root_uri, server_process) as lsp_client:
             # 使用 LSP 客户端进行其他操作
             file_path = root_path / 'test.lean'
-            with open(file_path, "r") as f:
-                text = f.readlines()
-            print("text", text)
-            textDocument = getTextDocument(file_path, ''.join(text))
+            textDocument = getTextDocument(file_path, '')
             lsp_client.didOpen(textDocument)
             session_id = getRpcSession(lsp_client, textDocument.uri)
+
+            with open(file_path, "r") as f:
+                text = f.readlines()
+            lsp_client.didChange(textDocument, getTextChanges([], text))
             for line in range(len(text)):
                 # 使用生成的会话 ID
                 goals = getInteractiveGoals(
@@ -173,7 +189,7 @@ def main():
                     Position(line=line+1, character=0),
                     session_id
                 )
-                print("line", line, ":", goals)
+                print("step", line, ":", goals)
 
 
 if __name__ == "__main__":
