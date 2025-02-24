@@ -1,4 +1,9 @@
 namespace PlayGround
-theorem Or.elim : ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by
-  intro a b c h h1 h2
-  exact Or.rec h1 h2 h
+theorem not_not_em : (a : Prop) -> Not (Not (Or a (Not a))) := by
+  intro a h
+  apply h
+  apply Or.inr
+  intro ha
+  apply h
+  apply Or.inl
+  exact ha
