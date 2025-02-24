@@ -1,9 +1,4 @@
 namespace PlayGround
-theorem not_not_em : (a : Prop) -> Not (Not (Or a (Not a))) := by
-  intro a h
-  apply h
-  apply Or.inr
-  intro ha
-  apply h
-  apply Or.inl
-  exact ha
+theorem Exists.imp : ∀ {α : Sort u} {p q : α → Prop}, (∀ (a : α), p a → q a) → Exists p → Exists q := by
+  intro α p q h h1
+  exact Exists.rec (fun a ha => Exists.intro a (h a ha)) h1

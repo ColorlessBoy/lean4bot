@@ -38,9 +38,5 @@ initPrompt = [
     {
         "role": "assistant",
         "content": '```json\n{\n  "code": "namespace PlayGround\\ntheorem Or.elim : ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by\\n  intro a b c h h1 h2\\n  exact Or.rec h1 h2 h",\n  "info": {\n    "0": [],\n    "1": ["⊢ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c"],\n    "2": ["a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c"],\n    "3": []\n  },\n  "description": "我的思路是：首先通过 `intro` 引入所有假设，然后使用 `Or.rec` 递归器来处理 `a ∨ b` 的情况。`Or.rec` 需要两个函数：一个处理 `a` 的情况（即 `h1`），另一个处理 `b` 的情况（即 `h2`）。通过 `Or.rec h1 h2 h`，我们可以根据 `h` 的具体情况选择 `h1` 或 `h2` 来推导出 `c`。"\n}\n```',
-    },
-    {
-        "role": "user",
-        "content": "上一题你证明对了，过程理解也是正确的。请听下一题：namespace PlayGround\\ntheorem not_not_em : (a : Prop) → ¬¬(a ∨ ¬a) := by",
-    },
+    }
 ]
