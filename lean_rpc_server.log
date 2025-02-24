@@ -1,0 +1,22 @@
+2025-02-24 10:13:02,410 - INFO - Lean process start.
+2025-02-24 10:13:02,413 - INFO - Lean process successed.
+2025-02-24 10:13:02,413 - INFO - Lean client initializing...
+2025-02-24 10:13:02,463 - INFO - Lean client initialized.
+2025-02-24 10:13:02,464 - INFO - Lean server info
+2025-02-24 10:13:02,464 - INFO - initRpcSessionId start
+2025-02-24 10:13:02,489 - INFO - initRpcSessionId response:
+2025-02-24 10:13:02,489 - INFO - Resource test initialized.
+2025-02-24 10:13:02,489 - INFO - Received request to check_proof
+2025-02-24 10:13:02,490 - INFO - didChange() start.
+2025-02-24 10:13:02,490 - INFO - didChange() successed.
+2025-02-24 10:13:02,490 - INFO - getInteractiveGoals() start.
+2025-02-24 10:13:02,674 - INFO - getInteractiveGoals() successed.
+2025-02-24 10:13:02,674 - INFO - getDiagnostics() start.
+2025-02-24 10:13:02,674 - INFO - getDiagnostics() end.
+2025-02-24 10:13:02,675 - DEBUG - code: 'example : {a b c : Prop} -> Or a b -> (a -> c) -> (b -> c) -> c := by\n  intro a b c hab hac hbc\n  apply Or.rec\n  exact hac\n  exact hbc\n'
+2025-02-24 10:13:02,675 - DEBUG - goals: [['⊢ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c'], ['a, b, c : Prop, hab : a ∨ b, hac : a → c, hbc : b → c ⊢ c'], ['a, b, c : Prop, hab : a ∨ b, hac : a → c, hbc : b → c ⊢ c'], ['a, b, c : Prop, hab : a ∨ b, hac : a → c, hbc : b → c ⊢ c'], ['a, b, c : Prop, hab : a ∨ b, hac : a → c, hbc : b → c ⊢ c'], ['a, b, c : Prop, hab : a ∨ b, hac : a → c, hbc : b → c ⊢ c']]
+2025-02-24 10:13:02,675 - DEBUG - diagnostics: []
+2025-02-24 10:13:02,675 - INFO - Releasing resource test.
+2025-02-24 10:13:02,676 - INFO - Lean process released.
+2025-02-24 10:13:02,676 - INFO - Lsp client released.
+2025-02-24 10:13:02,676 - INFO - Resource test released.
