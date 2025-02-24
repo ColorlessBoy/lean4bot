@@ -41,6 +41,6 @@ initPrompt = [
     },
     {
         "role": "user",
-        "content": "上一题你证明对了，过程理解也是正确的。请听下一题：namespace PlayGround\\ntheorem not_not_em : (a : Prop) -> Not (Not (Or a (Not a))) := by",
+        "content": "上一题你证明对了，过程理解也是正确的。请听下一题：namespace PlayGround\\ntheorem not_not_em : (a : Prop) → ¬¬(a ∨ ¬a) := by",
     },
 ]
