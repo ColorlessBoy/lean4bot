@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 import subprocess
+from threading import Event
 import sys
 from pylspclient import LspClient, JsonRpcEndpoint, LspEndpoint
 from pylspclient.lsp_pydantic_strcuts import (
@@ -32,11 +33,12 @@ class LeanServer:
         self.rootPath = rootPath
         self.rootUri = toUri(rootPath)
         self.leanProcess = LeanServer.__initLeanProcess__(rootPath)
-        self.lspClient, self.diagnostics = LeanServer.__initLspClient__(self.rootUri, self.leanProcess)
+        self.diagnostics = {}
+        self.diagnostics_updated = Event()  # Add event flag
+        self.lspClient = self.__initLspClient__()
         filePath = rootPath / fileName
         self.textDocument: TextDocumentItem = LeanServer.__init_text_document__(filePath, text)
         self.lspClient.didOpen(self.textDocument)
-        self.sessionId: str = LeanServer.__initRpcSessionId__(self.lspClient, self.textDocument.uri)
         self.text = text
         logging.info(f"Resource {self.name} initialized.")
 
@@ -64,11 +66,13 @@ class LeanServer:
 
     def didChange(self, text: list[str]) -> any:
         logging.info("didChange() start.")
+        logging.debug('\n'.join(text))
         range = {
             "start": {"line": 0, "character": 0},
             "end": {"line": len(self.text), "character": 0},
         }
         params = [{"range": range, "text": "\n".join(text)}]
+        self.diagnostics_updated.clear()
         self.lspClient.didChange(self.textDocument, params)
         self.text = text
         logging.info("didChange() successed.")
@@ -76,7 +80,8 @@ class LeanServer:
     
     def getInteractiveGoals(self) -> list[dict]:
         logging.info("getInteractiveGoals() start.")
-        result = []
+        result = {}
+        sessionId: str = LeanServer.__initRpcSessionId__(self.lspClient, self.textDocument.uri)
         for line in range(len(self.text)):
             position = Position(line=line + 1, character=0)
             params = {
@@ -85,22 +90,27 @@ class LeanServer:
                     "textDocument": self.textDocument.model_dump(),
                     "position": position.model_dump(),
                 },
-                "sessionId": self.sessionId,
+                "sessionId": sessionId,
                 "position": position.model_dump(),
                 "textDocument": self.textDocument.model_dump(),
             }
             response = self.lspClient.lsp_endpoint.call_method("$/lean/rpc/call", **params)
-            goals = [LeanServer.__processGoal__(goal) for goal in response["goals"]]
-            result.append(goals)
+            if response is None or "goals" not in response:
+                result[str(line)] = []
+            else:
+                goals = [LeanServer.__processGoal__(goal) for goal in response["goals"]]
+                result[str(line)] = goals
         logging.info("getInteractiveGoals() successed.")
         return result
     
-    def getDiagnostics(self, serverity = 1):
+    def getDiagnostics(self, serverity = 1, timeout = 1):
         logging.info("getDiagnostics() start.")
-        processed_diagnostics = [diag for diag in self.diagnostics[self.textDocument.uri] if diag["severity"] <= serverity]
+        logging.info(self.diagnostics)
+        if not self.diagnostics_updated.wait(timeout):
+            logging.warning(f"Timeout waiting for diagnostics after {timeout} seconds")
+        processed_diagnostics = [diag for diag in self.diagnostics[self.textDocument.uri] if int(diag['severity']) <= serverity]
         logging.info("getDiagnostics() end.")
         return processed_diagnostics
-
 
     def __initLeanProcess__(rootPath: str) -> subprocess.Popen:
         try:
@@ -121,15 +131,16 @@ class LeanServer:
             logging.error(f"Lean process failed: {e}", file=sys.stderr)
             raise  # Re-raise exception to abort context manager
     
-    def __initLspClient__(rootUri: str, serverProcess: subprocess.Popen):
-        diagnostics = {}
+    def __initLspClient__(self):
         def onDiagnostics(params):
-            uri = params["uri"]
-            diagnostics[uri] = params["diagnostics"]
+            logging.debug("onDiagnostics()", params)
+            self.diagnostics[self.textDocument.uri] = params["diagnostics"]
+            self.diagnostics_updated.set()  # Signal that diagnostics are updated
+
         def empty_callback(params):
             pass
         json_rpc_endpoint = JsonRpcEndpoint(
-            serverProcess.stdin, serverProcess.stdout
+            self.leanProcess.stdin, self.leanProcess.stdout
         )
         lsp_endpoint = LspEndpoint(
             json_rpc_endpoint,
@@ -143,7 +154,7 @@ class LeanServer:
         initialize_response = lsp_client.initialize(
             processId = None,
             rootPath = None,
-            rootUri = rootUri,
+            rootUri = self.rootUri,
             initializationOptions = None,
             capabilities = {},
             trace = "off",
@@ -154,7 +165,7 @@ class LeanServer:
         lsp_client.initialized()
         logging.info("Lean client initialized.")
         logging.info("Lean server info", initialize_response["serverInfo"])
-        return lsp_client, diagnostics
+        return lsp_client
     
     def __init_text_document__(file_path: Path, text: list[str]) -> TextDocumentItem:
         file_uri = toUri(file_path)
