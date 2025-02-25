@@ -9,27 +9,27 @@ initPrompt = [
   },
   {
     "role": "user",
-    "content": "import mathlib\\nnamespace PlayGround\\ntheorem And.comm : ∀ {a b : Prop}, a ∧ b → b ∧ a := by"
+    "content": "import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\nimport MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.comm : ∀ {a b : Prop}, a ∧ b → b ∧ a := by"
   },
   {
     "role": "assistant",
-    "content": "```json\n{\n  \"code\": \"import mathlib\\nnamespace PlayGround\\ntheorem And.comm : ∀ {a b : Prop}, a ∧ b → b ∧ a := by\\n  intro a b h\\n  apply And.intro\\n  exact And.right h\\n  exact And.left h\",\n  \"info\": {\n    \"2\": [\"⊢ ∀ {a b : Prop}, a ∧ b → b ∧ a\"],\n    \"3\": [\"a, b : Prop ⊢ a ∧ b → b ∧ a\"],\n    \"4\": [\"a, b : Prop, h : a ∧ b ⊢ b ∧ a\"],\n    \"5\": [\"a, b : Prop, h : a ∧ b ⊢ b\", \"a, b : Prop, h : a ∧ b ⊢ a\"]\n  },\n  \"description\": \"我的思路是首先假设 a ∧ b，然后使用 And.intro 构建 b ∧ a。通过 And.right h 获取 b，通过 And.left h 获取 a，从而完成证明。\"\n}\n```"
+    "content": "```json\n{\n  \"code\": \"import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.comm : ∀ {a b : Prop}, a ∧ b → b ∧ a := by\\n  intro a b h\\n  apply And.intro\\n  exact And.right h\\n  exact And.left h\",\n  \"info\": {\n    \"3\": [\"⊢ ∀ {a b : Prop}, a ∧ b → b ∧ a\"],\n    \"4\": [\"a, b : Prop ⊢ a ∧ b → b ∧ a\"],\n    \"5\": [\"a, b : Prop, h : a ∧ b ⊢ b ∧ a\"],\n    \"6\": [\"a, b : Prop, h : a ∧ b ⊢ b\", \"a, b : Prop, h : a ∧ b ⊢ a\"]\n  },\n  \"description\": \"我的思路是首先假设 a ∧ b，然后使用 And.intro 构建 b ∧ a。通过 And.right h 获取 b，通过 And.left h 获取 a，从而完成证明。\"\n}\n```"
   },
   {
     "role": "user",
-    "content": "回复的格式不错，请保持。你虽然证明了题目，但是过程info有一步是错的，可能导致后面都是错的：```json {\"goals\": {\"4\": [\"a, b : Prop, h : a ∧ b ⊢ b\", \"a, b : Prop, h : a ∧ b ⊢ a\"]}, \"diagnostics\": []} ```"
+    "content": "回复的格式不错，请保持。你虽然证明了题目，但是过程info有一步是错的，可能导致后面都是错的：```json {\"goals\": {\"5\": [\"a, b : Prop, h : a ∧ b ⊢ b\", \"a, b : Prop, h : a ∧ b ⊢ a\"]}, \"diagnostics\": []} ```"
   },
   {
     "role": "assistant",
-    "content": "```json\n{\n  \"code\": \"import mathlib\\nnamespace PlayGround\\ntheorem And.intro : ∀ {a b : Prop}, a ∧ b → b ∧ a := by\\n  intro a b h\\n  apply And.intro\\n  exact h.right\\n  exact h.left\",\n  \"info\": {\n    \"2\": [\"⊢ ∀ {a b : Prop}, a ∧ b → b ∧ a\"],\n    \"3\": [\"a, b : Prop, h : a ∧ b ⊢ b ∧ a\"],\n    \"4\": [\"a, b : Prop, h : a ∧ b ⊢ b\", \"a, b : Prop, h : a ∧ b ⊢ a\"],\n    \"5\": [\"a, b : Prop, h : a ∧ b ⊢ a\"],\n  },\n  \"description\": \"我的主要思路是：首先通过 `intro` 引入假设 `h : a ∧ b`，然后使用 `And.intro` 构造目标 `b ∧ a`。为了构造 `b ∧ a`，需要分别证明 `b` 和 `a`。通过 `h.right` 可以提取 `b`，通过 `h.left` 可以提取 `a`，从而完成证明。\"\n}\n```"
+    "content": "```json\n{\n  \"code\": \"import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.intro : ∀ {a b : Prop}, a ∧ b → b ∧ a := by\\n  intro a b h\\n  apply And.intro\\n  exact h.right\\n  exact h.left\",\n  \"info\": {\n    \"3\": [\"⊢ ∀ {a b : Prop}, a ∧ b → b ∧ a\"],\n    \"3\": [\"a, b : Prop, h : a ∧ b ⊢ b ∧ a\"],\n    \"4\": [\"a, b : Prop, h : a ∧ b ⊢ b\", \"a, b : Prop, h : a ∧ b ⊢ a\"],\n    \"5\": [\"a, b : Prop, h : a ∧ b ⊢ a\"],\n  },\n  \"description\": \"我的主要思路是：首先通过 `intro` 引入假设 `h : a ∧ b`，然后使用 `And.intro` 构造目标 `b ∧ a`。为了构造 `b ∧ a`，需要分别证明 `b` 和 `a`。通过 `h.right` 可以提取 `b`，通过 `h.left` 可以提取 `a`，从而完成证明。\"\n}\n```"
   },
   {
     "role": "user",
-    "content": "上一题你证明对了，过程理解也是正确的。请听下一题：import mathlib\\nnamespace PlayGround\\ntheorem Or.elim: ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by"
+    "content": "上一题你证明对了，过程理解也是正确的。请听下一题：import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem Or.elim: ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by"
   },
   {
     "role": "assistant",
-    "content": "```json\n{\n  \"code\": \"import mathlib\\nnamespace PlayGround\\ntheorem Or.elim : ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by\\n  intro a b c h h1 h2\\n  apply Or.rec\\n  exact h1\\n  exact h2\\n  exact h\",\n  \"info\": {\n    \"2\": [\"⊢ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c\"],\n    \"3\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"],\n    \"4\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"],\n    \"5\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"]\n  },\n  \"description\": \"我的思路是：首先通过 `intro` 引入假设 `h : a ∨ b`、`h1 : a → c` 和 `h2 : b → c`。然后使用 `Or.rec` 来对 `h : a ∨ b` 进行分情况处理。对于 `a` 的情况，用 `h1` 得到 `c`；对于 `b` 的情况，用 `h2` 得到 `c`。最后通过 `exact h` 完成证明。\"\n}\n```"
+    "content": "```json\n{\n  \"code\": \"import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem Or.elim : ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by\\n  intro a b c h h1 h2\\n  apply Or.rec\\n  exact h1\\n  exact h2\\n  exact h\",\n  \"info\": {\n    \"3\": [\"⊢ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c\"],\n    \"4\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"],\n    \"5\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"],\n    \"6\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"]\n  },\n  \"description\": \"我的思路是：首先通过 `intro` 引入假设 `h : a ∨ b`、`h1 : a → c` 和 `h2 : b → c`。然后使用 `Or.rec` 来对 `h : a ∨ b` 进行分情况处理。对于 `a` 的情况，用 `h1` 得到 `c`；对于 `b` 的情况，用 `h2` 得到 `c`。最后通过 `exact h` 完成证明。\"\n}\n```"
   },
   {
     "role": "user",
@@ -37,6 +37,6 @@ initPrompt = [
   },
   {
     "role": "assistant",
-    "content": "```json\n{\n  \"code\": \"import mathlib\\nnamespace PlayGround\\ntheorem Or.elim : ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by\\n  intro a b c h h1 h2\\n  exact Or.rec h1 h2 h\",\n  \"info\": {\n    \"2\": [\"⊢ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c\"],\n    \"3\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"]\n  },\n  \"description\": \"我的思路是：首先通过 `intro` 引入所有假设，然后使用 `Or.rec` 递归器来处理 `a ∨ b` 的情况。`Or.rec` 需要两个函数：一个处理 `a` 的情况（即 `h1`），另一个处理 `b` 的情况（即 `h2`）。通过 `Or.rec h1 h2 h`，我们可以根据 `h` 的具体情况选择 `h1` 或 `h2` 来推导出 `c`。\"\n}\n```"
+    "content": "```json\n{\n  \"code\": \"import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem Or.elim : ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c := by\\n  intro a b c h h1 h2\\n  exact Or.rec h1 h2 h\",\n  \"info\": {\n    \"3\": [\"⊢ ∀ {a b c : Prop}, a ∨ b → (a → c) → (b → c) → c\"],\n    \"4\": [\"a, b, c : Prop, h : a ∨ b, h1 : a → c, h2 : b → c ⊢ c\"]\n  },\n  \"description\": \"我的思路是：首先通过 `intro` 引入所有假设，然后使用 `Or.rec` 递归器来处理 `a ∨ b` 的情况。`Or.rec` 需要两个函数：一个处理 `a` 的情况（即 `h1`），另一个处理 `b` 的情况（即 `h2`）。通过 `Or.rec h1 h2 h`，我们可以根据 `h` 的具体情况选择 `h1` 或 `h2` 来推导出 `c`。\"\n}\n```"
   },
 ]

@@ -10,6 +10,7 @@ from pylspclient.lsp_pydantic_strcuts import (
     LanguageIdentifier,
     Position,
 )
+import json
 # 设置日志配置
 logging.basicConfig(
     filename="LeanServer.log",  # 日志输出到文件
@@ -31,25 +32,28 @@ class LeanServer:
         rootPath: Optional[str] = None,
         fileName: Optional[str] = None,
         text: list[str] = [],
-        timeout = 5,
+        timeout = 20,
     ):
         if rootPath is None:
             rootPath = Path(__file__).parent / "LeanProject"
         if fileName is None:
             fileName = f"{name}.lean"
         self.name = name
+        self.timeout = timeout
         self.rootPath = rootPath
         self.rootUri = toUri(rootPath)
         self.leanProcess = LeanServer.__initLeanProcess__(rootPath)
         self.diagnostics = {}
         self.diagnostics_updated = Event()  # Add event flag
-        self.lspClient = self.__initLspClient__(timeout=timeout)
+        self.progress_completed = Event()  # Add event flag
+        self.lspClient = self.__initLspClient__()
         filePath = rootPath / fileName
         self.textDocument: TextDocumentItem = LeanServer.__init_text_document__(
             filePath, text
         )
         self.lspClient.didOpen(self.textDocument)
         self.text = text
+        self.headLines = len(text)
         logging.info(f"Resource {self.name} initialized.")
 
     def release(self):
@@ -66,6 +70,8 @@ class LeanServer:
 
     def getCodeInfo(self, code: str):
         logging.info("Received request to check_proof")
+        self.progress_completed.clear()
+        self.diagnostics_updated.clear()
         self.didChange(code.split("\n"))
         diagnostics = self.getDiagnostics()
         if len(diagnostics) > 0:
@@ -85,7 +91,6 @@ class LeanServer:
             "end": {"line": len(self.text), "character": 0},
         }
         params = [{"range": range, "text": "\n".join(text)}]
-        self.diagnostics_updated.clear()
         self.lspClient.didChange(self.textDocument, params)
         self.text = text
         logging.info("didChange() successed.")
@@ -98,35 +103,40 @@ class LeanServer:
         )
         last_goals_str = ""
         logging.debug(f"sessionId: {sessionId}")
-        for line in range(1, len(self.text)):
-            position = Position(line=line + 1, character=0)
-            params = {
-                "method": "Lean.Widget.getInteractiveGoals",
-                "params": {
-                    "textDocument": self.textDocument.model_dump(),
+        try: 
+            for line in range(1, len(self.text)):
+                position = Position(line=line + 1, character=0)
+                params = {
+                    "method": "Lean.Widget.getInteractiveGoals",
+                    "params": {
+                        "textDocument": self.textDocument.model_dump(),
+                        "position": position.model_dump(),
+                    },
+                    "sessionId": sessionId,
                     "position": position.model_dump(),
-                },
-                "sessionId": sessionId,
-                "position": position.model_dump(),
-                "textDocument": self.textDocument.model_dump(),
-            }
-            response = self.lspClient.lsp_endpoint.call_method(
-                "$/lean/rpc/call", **params
-            )
-            if response and "goals" in response and len(response["goals"]) > 0:
-                goals = [LeanServer.__processGoal__(goal) for goal in response["goals"]]
-                goals_str = str(goals)
-                if line > 0 and goals_str != last_goals_str:
-                    result[str(line)] = goals
-                    last_goals_str = goals_str
-        logging.info("getInteractiveGoals() successed.")
+                    "textDocument": self.textDocument.model_dump(),
+                }
+                response = self.lspClient.lsp_endpoint.call_method(
+                    "$/lean/rpc/call", **params
+                )
+                if response and "goals" in response and len(response["goals"]) > 0:
+                    goals = [LeanServer.__processGoal__(goal) for goal in response["goals"]]
+                    goals_str = str(goals)
+                    if line > 0 and goals_str != last_goals_str:
+                        result[str(line)] = goals
+                        last_goals_str = goals_str
+            logging.info("getInteractiveGoals() successed.")
+        except Exception as e:
+            logging.error("getInteractiveGoals() failed: " + str(e))
         return result
 
-    def getDiagnostics(self, serverity=1, timeout=1):
+    def getDiagnostics(self, serverity=1):
         logging.info("getDiagnostics() start.")
         logging.info(self.diagnostics)
-        if not self.diagnostics_updated.wait(timeout):
-            logging.warning(f"Timeout waiting for diagnostics after {timeout} seconds")
+        if not self.progress_completed.wait(100 * self.timeout):
+            logging.warning(f"Timeout waiting for progress completed after {100 * self.timeout} seconds")
+        if not self.diagnostics_updated.wait(self.timeout):
+            logging.warning(f"Timeout waiting for diagnostics after {self.timeout} seconds")
         processed_diagnostics = [
             diag
             for diag in self.diagnostics[self.textDocument.uri]
@@ -154,13 +164,18 @@ class LeanServer:
             logging.error(f"Lean process failed: {e}", file=sys.stderr)
             raise  # Re-raise exception to abort context manager
 
-    def __initLspClient__(self, timeout=5):
+    def __initLspClient__(self):
         def onDiagnostics(params):
-            logging.debug("onDiagnostics()", params)
+            logging.debug("onDiagnostics() " + str(params))
             self.diagnostics[self.textDocument.uri] = params["diagnostics"]
             self.diagnostics_updated.set()  # Signal that diagnostics are updated
 
-        def empty_callback(params):
+        def onFileProgress(params):
+            logging.debug("onFileProgress()" + str(params))
+            if len(params["processing"]) == 0:
+                self.progress_completed.set()
+        
+        def emptyCallback(params):
             pass
 
         json_rpc_endpoint = JsonRpcEndpoint(
@@ -170,9 +185,10 @@ class LeanServer:
             json_rpc_endpoint,
             notify_callbacks={
                 "textDocument/publishDiagnostics": onDiagnostics,
-                "$/lean/fileProgress": empty_callback,
+                "$/lean/fileProgress": onFileProgress,
+                "workspace/semanticTokens/refresh": emptyCallback,
             },
-            timeout=timeout,
+            timeout=self.timeout,
         )
         lsp_client = LspClient(lsp_endpoint)
         logging.info("Lean client initializing...")

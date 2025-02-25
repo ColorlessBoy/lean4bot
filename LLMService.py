@@ -25,7 +25,7 @@ class LLMService:
         messages.append(
             {
                 "role": "user",
-                "content": "上一题你证明对了，过程理解也是正确的。请听下一题：import mathlib\\nnamespace PlayGround\\n"
+                "content": "上一题你证明对了，过程理解也是正确的。请听下一题："
                 + question,
             },
         )
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-q",
         "--question",
-        default="theorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by",
+        default="import MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by",
         help="Question to process",
     )
     args = parser.parse_args()
