@@ -58,6 +58,12 @@ class AliyunService:
                     )
                 else:
                     print("\n证明成功\ninfo:", info)
+                    messages.append(
+                        {
+                            "role": "user",
+                            "content": "你的证明完全正确。",
+                        }
+                    )
                     break
             except Exception as e:
                 print(f"\n请求出错：{str(e)}")
