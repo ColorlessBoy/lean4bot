@@ -10,21 +10,29 @@ from pylspclient.lsp_pydantic_strcuts import (
     LanguageIdentifier,
     Position,
 )
-
 # 设置日志配置
 logging.basicConfig(
-    filename='LeanServer.log',  # 日志输出到文件
+    filename="LeanServer.log",  # 日志输出到文件
     level=logging.DEBUG,  # 记录所有级别的日志
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
+
 
 def toUri(path: Path) -> str:
     """Convert a path to a URI."""
     return str(path.absolute().as_uri())
 
+
 # 假设这是需要清理的资源
 class LeanServer:
-    def __init__(self, name, rootPath: Optional[str] = None, fileName: Optional[str] = None, text: list[str] = []):
+    def __init__(
+        self,
+        name,
+        rootPath: Optional[str] = None,
+        fileName: Optional[str] = None,
+        text: list[str] = [],
+        timeout = 5,
+    ):
         if rootPath is None:
             rootPath = Path(__file__).parent / "LeanProject"
         if fileName is None:
@@ -35,9 +43,11 @@ class LeanServer:
         self.leanProcess = LeanServer.__initLeanProcess__(rootPath)
         self.diagnostics = {}
         self.diagnostics_updated = Event()  # Add event flag
-        self.lspClient = self.__initLspClient__()
+        self.lspClient = self.__initLspClient__(timeout=timeout)
         filePath = rootPath / fileName
-        self.textDocument: TextDocumentItem = LeanServer.__init_text_document__(filePath, text)
+        self.textDocument: TextDocumentItem = LeanServer.__init_text_document__(
+            filePath, text
+        )
         self.lspClient.didOpen(self.textDocument)
         self.text = text
         logging.info(f"Resource {self.name} initialized.")
@@ -54,19 +64,22 @@ class LeanServer:
             logging.info("Lsp client released.")
         logging.info(f"Resource {self.name} released.")
 
-    def getCodeInfo(self, code : str):
+    def getCodeInfo(self, code: str):
         logging.info("Received request to check_proof")
         self.didChange(code.split("\n"))
-        goals = self.getInteractiveGoals()
         diagnostics = self.getDiagnostics()
+        if len(diagnostics) > 0:
+            goals = []
+        else:
+            goals = self.getInteractiveGoals()
         logging.debug(f"code: {repr(code)}")
         logging.debug(f"goals: {goals}")
         logging.debug(f"diagnostics: {diagnostics}")
-        return {"goals":goals, "diagnostics":diagnostics}
+        return {"goals": goals, "diagnostics": diagnostics}
 
     def didChange(self, text: list[str]) -> any:
         logging.info("didChange() start.")
-        logging.debug('\n'.join(text))
+        logging.debug("\n".join(text))
         range = {
             "start": {"line": 0, "character": 0},
             "end": {"line": len(self.text), "character": 0},
@@ -77,12 +90,15 @@ class LeanServer:
         self.text = text
         logging.info("didChange() successed.")
 
-    
     def getInteractiveGoals(self) -> list[dict]:
         logging.info("getInteractiveGoals() start.")
         result = {}
-        sessionId: str = LeanServer.__initRpcSessionId__(self.lspClient, self.textDocument.uri)
-        for line in range(len(self.text)):
+        sessionId: str = LeanServer.__initRpcSessionId__(
+            self.lspClient, self.textDocument.uri
+        )
+        last_goals_str = ""
+        logging.debug(f"sessionId: {sessionId}")
+        for line in range(1, len(self.text)):
             position = Position(line=line + 1, character=0)
             params = {
                 "method": "Lean.Widget.getInteractiveGoals",
@@ -94,19 +110,28 @@ class LeanServer:
                 "position": position.model_dump(),
                 "textDocument": self.textDocument.model_dump(),
             }
-            response = self.lspClient.lsp_endpoint.call_method("$/lean/rpc/call", **params)
+            response = self.lspClient.lsp_endpoint.call_method(
+                "$/lean/rpc/call", **params
+            )
             if response and "goals" in response and len(response["goals"]) > 0:
                 goals = [LeanServer.__processGoal__(goal) for goal in response["goals"]]
-                result[str(line)] = goals
+                goals_str = str(goals)
+                if line > 0 and goals_str != last_goals_str:
+                    result[str(line)] = goals
+                    last_goals_str = goals_str
         logging.info("getInteractiveGoals() successed.")
         return result
-    
-    def getDiagnostics(self, serverity = 1, timeout = 1):
+
+    def getDiagnostics(self, serverity=1, timeout=1):
         logging.info("getDiagnostics() start.")
         logging.info(self.diagnostics)
         if not self.diagnostics_updated.wait(timeout):
             logging.warning(f"Timeout waiting for diagnostics after {timeout} seconds")
-        processed_diagnostics = [diag for diag in self.diagnostics[self.textDocument.uri] if int(diag['severity']) <= serverity]
+        processed_diagnostics = [
+            diag
+            for diag in self.diagnostics[self.textDocument.uri]
+            if int(diag["severity"]) <= serverity
+        ]
         logging.info("getDiagnostics() end.")
         return processed_diagnostics
 
@@ -128,8 +153,8 @@ class LeanServer:
             # Handle any startup failures and ensure clean exit
             logging.error(f"Lean process failed: {e}", file=sys.stderr)
             raise  # Re-raise exception to abort context manager
-    
-    def __initLspClient__(self):
+
+    def __initLspClient__(self, timeout=5):
         def onDiagnostics(params):
             logging.debug("onDiagnostics()", params)
             self.diagnostics[self.textDocument.uri] = params["diagnostics"]
@@ -137,6 +162,7 @@ class LeanServer:
 
         def empty_callback(params):
             pass
+
         json_rpc_endpoint = JsonRpcEndpoint(
             self.leanProcess.stdin, self.leanProcess.stdout
         )
@@ -146,17 +172,18 @@ class LeanServer:
                 "textDocument/publishDiagnostics": onDiagnostics,
                 "$/lean/fileProgress": empty_callback,
             },
+            timeout=timeout,
         )
         lsp_client = LspClient(lsp_endpoint)
         logging.info("Lean client initializing...")
         initialize_response = lsp_client.initialize(
-            processId = None,
-            rootPath = None,
-            rootUri = self.rootUri,
-            initializationOptions = None,
-            capabilities = {},
-            trace = "off",
-            workspaceFolders = None,
+            processId=None,
+            rootPath=None,
+            rootUri=self.rootUri,
+            initializationOptions=None,
+            capabilities={},
+            trace="off",
+            workspaceFolders=None,
         )
         if initialize_response["serverInfo"]["name"] != "Lean 4 Server":
             raise RuntimeError("Initializing lean client failed.")
@@ -164,12 +191,15 @@ class LeanServer:
         logging.info("Lean client initialized.")
         logging.info("Lean server info", initialize_response["serverInfo"])
         return lsp_client
-    
+
     def __init_text_document__(file_path: Path, text: list[str]) -> TextDocumentItem:
         file_uri = toUri(file_path)
         version = 1
         textDocument = TextDocumentItem(
-            uri=file_uri, languageId=LanguageIdentifier.LEAN, version=version, text='\n'.join(text)
+            uri=file_uri,
+            languageId=LanguageIdentifier.LEAN,
+            version=version,
+            text="\n".join(text),
         )
         return textDocument
 
@@ -178,7 +208,7 @@ class LeanServer:
         response = lspClient.lsp_endpoint.call_method("$/lean/rpc/connect", uri=fileUri)
         logging.info("initRpcSessionId response:", response)
         return response["sessionId"]
-    
+
     def __processGoal__(goal) -> str:
         result = []
         goal_prefix = goal.get("goalPrefix", "")
@@ -205,8 +235,13 @@ class LeanServer:
                 return tagged["text"]
             elif "tag" in tagged:
                 # 处理有标签的情况
-                return LeanServer.__processTaggedText__(tagged["tag"][1])  # 对第一个tag子元素递归处理
+                return LeanServer.__processTaggedText__(
+                    tagged["tag"][1]
+                )  # 对第一个tag子元素递归处理
             elif "append" in tagged:
                 # 处理append数组，递归处理每个元素
-                return "".join(LeanServer.__processTaggedText__(sub_tag) for sub_tag in tagged["append"])
+                return "".join(
+                    LeanServer.__processTaggedText__(sub_tag)
+                    for sub_tag in tagged["append"]
+                )
         return ""

@@ -7,6 +7,7 @@ from initPrompt import initPrompt
 import re
 import argparse
 
+
 class LLMService:
     def __init__(self, name: str):
         self.client = OpenAI(
@@ -24,7 +25,7 @@ class LLMService:
         messages.append(
             {
                 "role": "user",
-                "content": "上一题你证明对了，过程理解也是正确的。请听下一题：namespace PlayGround"
+                "content": "上一题你证明对了，过程理解也是正确的。请听下一题：import mathlib\\nnamespace PlayGround\\n"
                 + question,
             },
         )
@@ -40,32 +41,40 @@ class LLMService:
                 messages.append({"role": "assistant", "content": response["content"]})
                 answer = LLMService.__extractJsonContent__(response["content"])
                 answer = json.loads(answer)
+                print("answer:", answer)
                 info = self.leanServer.getCodeInfo(answer["code"])
                 if len(info["diagnostics"]) > 0:
                     print("\nerror diagnostics")
+                    response_info = {"diagnostics": info["diagnostics"]}
+                    print("response_info:", response_info)
                     messages.append(
                         {
                             "role": "user",
-                            "content": f"回复的格式不错，请保持。证明代码有报错：```json {json.dumps(info, ensure_ascii=False)} ```",
-                        }
-                    )
-                elif not LLMService.__compareInfo__(answer["info"], info["goals"]):
-                    print("\nerror info")
-                    messages.append(
-                        {
-                            "role": "user",
-                            "content": f"回复的格式不错，请保持。你虽然证明了题目，但是过程info有些地方是错的：```json {json.dumps(info, ensure_ascii=False)} ```",
+                            "content": f"回复的格式不错，请保持。证明代码有报错：```json {json.dumps(response_info, ensure_ascii=False)} ```",
                         }
                     )
                 else:
-                    print("\n证明成功\ninfo:", info)
-                    messages.append(
-                        {
-                            "role": "user",
-                            "content": "你的证明完全正确。",
-                        }
-                    )
-                    break
+                    key = LLMService.__compareInfo__(answer["info"], info["goals"])
+                    print("key:", key)
+                    if key:
+                        print("\nerror info", info["goals"][key])
+                        response_info = {key: info["goals"][key]}
+                        print("response_info:", response_info)
+                        messages.append(
+                            {
+                                "role": "user",
+                                "content": f"回复的格式不错，请保持。你虽然证明了题目，但是过程info有一步是错的，可能导致后面都是错的：```json {json.dumps(response_info, ensure_ascii=False)} ```",
+                            }
+                        )
+                    else:
+                        print("\n证明成功\ninfo:", info)
+                        messages.append(
+                            {
+                                "role": "user",
+                                "content": "你的证明完全正确。",
+                            }
+                        )
+                        break
             except Exception as e:
                 print(f"\n请求出错：{str(e)}")
                 break
@@ -106,29 +115,35 @@ class LLMService:
     def __compareInfo__(
         responseInfo: dict[str, list[str]], leanInfo: dict[str, list[str]]
     ):
-        if len(responseInfo) != len(leanInfo):
-            return False
-        for key, value in responseInfo.items():
-            if key not in leanInfo or str(value) != str(leanInfo[key]):
-                return False
-        return True
+        for key, value in leanInfo.items():
+            if key not in responseInfo or str(value) != str(leanInfo[key]):
+                return key
+        return None
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run LLM Service with custom output file')
-    parser.add_argument('-o', '--output', 
-                       default='message.json',
-                       help='Output file path (default: message.json)')
-    parser.add_argument('-q', '--question', 
-                       default="theorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by",
-                       help='Question to process')
+    parser = argparse.ArgumentParser(
+        description="Run LLM Service with custom output file"
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        default="message.json",
+        help="Output file path (default: message.json)",
+    )
+    parser.add_argument(
+        "-q",
+        "--question",
+        default="theorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by",
+        help="Question to process",
+    )
     args = parser.parse_args()
 
     aliyunService = LLMService("test")
     message = aliyunService.chatSession(args.question)
-    
-    with open(args.output, "w", encoding='utf-8') as f:
+
+    with open(args.output, "w", encoding="utf-8") as f:
         json.dump(message, f, ensure_ascii=False, indent=2)
-    
+
     aliyunService.release()
     sys.exit(0)
