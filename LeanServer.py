@@ -95,9 +95,7 @@ class LeanServer:
                 "textDocument": self.textDocument.model_dump(),
             }
             response = self.lspClient.lsp_endpoint.call_method("$/lean/rpc/call", **params)
-            if response is None or "goals" not in response:
-                result[str(line)] = []
-            else:
+            if response and "goals" in response and len(response["goals"]) > 0:
                 goals = [LeanServer.__processGoal__(goal) for goal in response["goals"]]
                 result[str(line)] = goals
         logging.info("getInteractiveGoals() successed.")

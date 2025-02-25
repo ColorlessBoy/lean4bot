@@ -5,6 +5,7 @@ from LeanServer import LeanServer
 import json
 from initPrompt import initPrompt
 import re
+import argparse
 
 class LLMService:
     def __init__(self, name: str):
@@ -114,10 +115,20 @@ class LLMService:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Run LLM Service with custom output file')
+    parser.add_argument('-o', '--output', 
+                       default='message.json',
+                       help='Output file path (default: message.json)')
+    parser.add_argument('-q', '--question', 
+                       default="theorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by",
+                       help='Question to process')
+    args = parser.parse_args()
+
     aliyunService = LLMService("test")
-    question = "theorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by"
-    message = aliyunService.chatSession(question)
-    with open("message.json", "w") as f:
-        json.dump(message, f, ensure_ascii=False)
+    message = aliyunService.chatSession(args.question)
+    
+    with open(args.output, "w", encoding='utf-8') as f:
+        json.dump(message, f, ensure_ascii=False, indent=2)
+    
     aliyunService.release()
     sys.exit(0)
