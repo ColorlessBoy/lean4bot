@@ -6,7 +6,7 @@ import json
 from initPrompt import initPrompt
 import re
 
-class AliyunService:
+class LLMService:
     def __init__(self, name: str):
         self.client = OpenAI(
             api_key=os.getenv("DASHSCOPE_API_KEY"),
@@ -35,9 +35,9 @@ class AliyunService:
                     stream=True,  # 启用流式输出
                     temperature=0.7,
                 )
-                response = AliyunService.__processStreamResponse__(stream)
+                response = LLMService.__processStreamResponse__(stream)
                 messages.append({"role": "assistant", "content": response["content"]})
-                answer = AliyunService.__extractJsonContent__(response["content"])
+                answer = LLMService.__extractJsonContent__(response["content"])
                 answer = json.loads(answer)
                 info = self.leanServer.getCodeInfo(answer["code"])
                 if len(info["diagnostics"]) > 0:
@@ -48,7 +48,7 @@ class AliyunService:
                             "content": f"回复的格式不错，请保持。证明代码有报错：```json {json.dumps(info, ensure_ascii=False)} ```",
                         }
                     )
-                elif not AliyunService.__compareInfo__(answer["info"], info["goals"]):
+                elif not LLMService.__compareInfo__(answer["info"], info["goals"]):
                     print("\nerror info")
                     messages.append(
                         {
@@ -114,7 +114,7 @@ class AliyunService:
 
 
 if __name__ == "__main__":
-    aliyunService = AliyunService("test")
+    aliyunService = LLMService("test")
     question = "theorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by"
     message = aliyunService.chatSession(question)
     with open("message.json", "w") as f:
