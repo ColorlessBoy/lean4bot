@@ -18,7 +18,7 @@ class LLMService:
         self.client.close()
         self.leanServer.release()
 
-    def chatSession(self, question, maxTries=5):
+    def chatSession(self, question, maxTries=10):
         messages = initPrompt
         messages.append(
             {
