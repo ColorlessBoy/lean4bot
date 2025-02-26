@@ -29,6 +29,7 @@ class LLMService:
                 + question,
             },
         )
+        code_counts: dict[int, int] = {}
         for _ in range(maxTries):
             try:
                 stream = self.client.chat.completions.create(
@@ -42,6 +43,23 @@ class LLMService:
                 answer = LLMService.__extractJsonContent__(response["content"])
                 answer = json.loads(answer)
                 print("answer:", answer)
+                current_code = answer["code"]
+                if current_code in code_counts:
+                    if code_counts[current_code] >= 3:
+                        messages.append(
+                            {
+                                "role": "user",
+                                "content": "由于连续3次生成重复代码，系统决定终止本次证明尝试。"
+                            }
+                        )
+                        break
+                    else:
+                        code_counts[current_code] += 1
+                        messages.append({
+                            "role": "user",
+                            "content": f"这是第 {code_counts[current_code]} 次出现相同的代码，请重新思考并给出不同的证明方法。"
+                        })
+                        continue
                 info = self.leanServer.getCodeInfo(answer["code"])
                 if len(info["diagnostics"]) > 0:
                     print("\nerror diagnostics")
