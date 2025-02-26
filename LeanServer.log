@@ -1,0 +1,184 @@
+2025-02-26 09:13:02,649 - INFO - Lean process start.
+2025-02-26 09:13:02,652 - INFO - Lean process successed.
+2025-02-26 09:13:02,652 - INFO - Lean client initializing...
+2025-02-26 09:13:03,448 - INFO - Lean client initialized.
+2025-02-26 09:13:03,448 - INFO - Lean server info
+2025-02-26 09:13:03,448 - INFO - Resource test initialized.
+2025-02-26 09:13:03,448 - INFO - Received request to check_proof
+2025-02-26 09:13:03,448 - INFO - didChange() start.
+2025-02-26 09:13:03,448 - DEBUG - import MiniF2F.Hello
+open BigOperators Real Nat Topology
+namespace PlayGround
+theorem Exists.imp : {α : Sort u} → {p q : α → Prop} → (∀ (a : α), p a → q a) → Exists p → Exists q := by
+  intro α p q h h1
+  apply Exists.rec
+  intro a ha
+  apply Exists.intro a
+  exact h a ha
+  exact h1
+
+2025-02-26 09:13:03,448 - INFO - didChange() successed.
+2025-02-26 09:13:03,449 - INFO - getDiagnostics() start.
+2025-02-26 09:13:03,449 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:13:03,675 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:13:03,675 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:13:03,675 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:03,675 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:03,675 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:13:03,675 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:13:03,675 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:03,675 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:03,679 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:13:03,903 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:13:03,905 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:13:03,905 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:03,905 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:04,226 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:04,226 - DEBUG - Received diagnostics: [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]
+2025-02-26 09:13:04,226 - INFO - Setting diagnostics flags for 1 items
+2025-02-26 09:13:04,226 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:04,226 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "error: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:04,226 - DEBUG - code: 'import MiniF2F.Hello\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp : {α : Sort u} → {p q : α → Prop} → (∀ (a : α), p a → q a) → Exists p → Exists q := by\n  intro α p q h h1\n  apply Exists.rec\n  intro a ha\n  apply Exists.intro a\n  exact h a ha\n  exact h1\n'
+2025-02-26 09:13:04,226 - DEBUG - Received diagnostics: [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "error: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]
+2025-02-26 09:13:04,226 - DEBUG - goals: []
+2025-02-26 09:13:04,226 - INFO - Setting diagnostics flags for 1 items
+2025-02-26 09:13:04,226 - DEBUG - diagnostics: [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]
+2025-02-26 09:13:04,226 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "error: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:04,226 - INFO - Releasing resource test.
+2025-02-26 09:13:04,231 - INFO - Lean process released.
+2025-02-26 09:13:04,231 - INFO - Lsp client released.
+2025-02-26 09:13:04,231 - INFO - Resource test released.
+2025-02-26 09:13:45,363 - INFO - Lean process start.
+2025-02-26 09:13:45,367 - INFO - Lean process successed.
+2025-02-26 09:13:45,369 - INFO - Lean client initializing...
+2025-02-26 09:13:45,902 - INFO - Lean client initialized.
+2025-02-26 09:13:45,903 - INFO - Lean server info
+2025-02-26 09:13:45,903 - INFO - Resource test initialized.
+2025-02-26 09:13:45,903 - INFO - Received request to check_proof
+2025-02-26 09:13:45,903 - INFO - didChange() start.
+2025-02-26 09:13:45,903 - DEBUG - import MiniF2F.Hello
+open BigOperators Real Nat Topology
+namespace PlayGround
+theorem Exists.imp : {α : Sort u} → {p q : α → Prop} → (∀ (a : α), p a → q a) → Exists p → Exists q := by
+  intro α p q h h1
+  apply Exists.rec
+  intro a ha
+  apply Exists.intro a
+  exact h a ha
+  exact h1
+
+2025-02-26 09:13:45,903 - INFO - didChange() successed.
+2025-02-26 09:13:45,903 - INFO - getDiagnostics() start.
+2025-02-26 09:13:45,903 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:13:46,131 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:13:46,131 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:13:46,131 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,131 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,131 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:13:46,132 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:13:46,132 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,132 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,135 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:13:46,364 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:13:46,364 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:13:46,364 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,364 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,698 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,698 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,698 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,698 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "error: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,698 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,698 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,803 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '✖ [3/3] Running MiniF2F.Hello\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,803 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,803 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,803 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': 'error: no such file or directory (error code: 2)\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,803 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,803 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,803 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '  file: ././././MiniF2F/Hello.lean\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,803 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,803 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,803 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': 'Some required builds logged failures:\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,803 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,803 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,803 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '- imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,803 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,803 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,803 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': '- MiniF2F.Hello\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,803 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,803 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,803 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'severity': 3, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': 'error: build failed\n', 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,803 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,803 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,807 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:13:46,807 - DEBUG - Received diagnostics: []
+2025-02-26 09:13:46,807 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:13:46,807 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "`/Users/penglingwei/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lake setup-file /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean Init MiniF2F.Hello` failed:\n\nstderr:\n✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\nerror: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n✖ [3/3] Running MiniF2F.Hello\nerror: no such file or directory (error code: 2)\n  file: ././././MiniF2F/Hello.lean\nSome required builds logged failures:\n- imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n- MiniF2F.Hello\nerror: build failed\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,807 - DEBUG - Received diagnostics: [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "`/Users/penglingwei/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lake setup-file /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean Init MiniF2F.Hello` failed:\n\nstderr:\n✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\nerror: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n✖ [3/3] Running MiniF2F.Hello\nerror: no such file or directory (error code: 2)\n  file: ././././MiniF2F/Hello.lean\nSome required builds logged failures:\n- imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n- MiniF2F.Hello\nerror: build failed\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]
+2025-02-26 09:13:46,807 - INFO - Setting diagnostics flags for 1 items
+2025-02-26 09:13:46,807 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "`/Users/penglingwei/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lake setup-file /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean Init MiniF2F.Hello` failed:\n\nstderr:\n✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\nerror: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n✖ [3/3] Running MiniF2F.Hello\nerror: no such file or directory (error code: 2)\n  file: ././././MiniF2F/Hello.lean\nSome required builds logged failures:\n- imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n- MiniF2F.Hello\nerror: build failed\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]}
+2025-02-26 09:13:46,807 - DEBUG - code: 'import MiniF2F.Hello\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp : {α : Sort u} → {p q : α → Prop} → (∀ (a : α), p a → q a) → Exists p → Exists q := by\n  intro α p q h h1\n  apply Exists.rec\n  intro a ha\n  apply Exists.intro a\n  exact h a ha\n  exact h1\n'
+2025-02-26 09:13:46,807 - DEBUG - goals: []
+2025-02-26 09:13:46,807 - DEBUG - diagnostics: [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 1, 'character': 0}}, 'message': "`/Users/penglingwei/.elan/toolchains/leanprover--lean4---v4.15.0/bin/lake setup-file /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean Init MiniF2F.Hello` failed:\n\nstderr:\n✖ [2/3] Running imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\nerror: /Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean: bad import 'MiniF2F.Hello'\n✖ [3/3] Running MiniF2F.Hello\nerror: no such file or directory (error code: 2)\n  file: ././././MiniF2F/Hello.lean\nSome required builds logged failures:\n- imports (/Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean)\n- MiniF2F.Hello\nerror: build failed\n", 'fullRange': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}}]
+2025-02-26 09:13:46,807 - INFO - Releasing resource test.
+2025-02-26 09:13:46,811 - INFO - Lean process released.
+2025-02-26 09:13:46,811 - INFO - Lsp client released.
+2025-02-26 09:13:46,811 - INFO - Resource test released.
+2025-02-26 09:14:15,515 - INFO - Lean process start.
+2025-02-26 09:14:15,518 - INFO - Lean process successed.
+2025-02-26 09:14:15,518 - INFO - Lean client initializing...
+2025-02-26 09:14:16,090 - INFO - Lean client initialized.
+2025-02-26 09:14:16,090 - INFO - Lean server info
+2025-02-26 09:14:16,090 - INFO - Resource test initialized.
+2025-02-26 09:14:16,090 - INFO - Received request to check_proof
+2025-02-26 09:14:16,091 - INFO - didChange() start.
+2025-02-26 09:14:16,091 - DEBUG - import MiniF2F.Minif2fImport
+open BigOperators Real Nat Topology
+namespace PlayGround
+theorem Exists.imp : {α : Sort u} → {p q : α → Prop} → (∀ (a : α), p a → q a) → Exists p → Exists q := by
+  intro α p q h h1
+  apply Exists.rec
+  intro a ha
+  apply Exists.intro a
+  exact h a ha
+  exact h1
+
+2025-02-26 09:14:16,091 - INFO - didChange() successed.
+2025-02-26 09:14:16,091 - INFO - getDiagnostics() start.
+2025-02-26 09:14:16,091 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:14:16,317 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:14:16,317 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:14:16,317 - DEBUG - Received diagnostics: []
+2025-02-26 09:14:16,317 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:14:16,321 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 0, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:16,321 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:14:16,321 - DEBUG - Received diagnostics: []
+2025-02-26 09:14:16,321 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:14:17,194 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': []}
+2025-02-26 09:14:17,194 - DEBUG - Received diagnostics: []
+2025-02-26 09:14:17,194 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': []}
+2025-02-26 09:14:20,233 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 1, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:14:20,233 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 1, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,246 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 1, 'character': 35}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,246 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 2, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,247 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 2, 'character': 0}, 'end': {'line': 2, 'character': 20}}, 'kind': 1}]}
+2025-02-26 09:14:20,257 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 3, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,257 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 3, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,257 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 3, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,257 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 3, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,257 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 3, 'character': 0}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,257 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 4, 'character': 2}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,257 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 4, 'character': 2}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,258 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 5, 'character': 2}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,258 - DEBUG - onFileProgress(){'textDocument': {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean'}, 'processing': [{'range': {'start': {'line': 3, 'character': 103}, 'end': {'line': 10, 'character': 0}}, 'kind': 1}]}
+2025-02-26 09:14:20,262 - DEBUG - onDiagnostics called with params: {'version': 1, 'uri': 'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean', 'diagnostics': [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}, 'message': "tactic 'apply' failed, failed to unify\n  ?motive ?t\nwith\n  Exists q\nα : Sort u\np q : α → Prop\nh : ∀ (a : α), p a → q a\nh1 : Exists p\n⊢ Exists q", 'fullRange': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}}]}
+2025-02-26 09:14:20,263 - DEBUG - Received diagnostics: [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}, 'message': "tactic 'apply' failed, failed to unify\n  ?motive ?t\nwith\n  Exists q\nα : Sort u\np q : α → Prop\nh : ∀ (a : α), p a → q a\nh1 : Exists p\n⊢ Exists q", 'fullRange': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}}]
+2025-02-26 09:14:20,263 - INFO - Setting diagnostics flags for 1 items
+2025-02-26 09:14:20,263 - DEBUG - Current diagnostics state: {'file:///Users/penglingwei/Documents/python/lean4bot/miniF2F-lean4/test.lean': [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}, 'message': "tactic 'apply' failed, failed to unify\n  ?motive ?t\nwith\n  Exists q\nα : Sort u\np q : α → Prop\nh : ∀ (a : α), p a → q a\nh1 : Exists p\n⊢ Exists q", 'fullRange': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}}]}
+2025-02-26 09:14:20,263 - DEBUG - code: 'import MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp : {α : Sort u} → {p q : α → Prop} → (∀ (a : α), p a → q a) → Exists p → Exists q := by\n  intro α p q h h1\n  apply Exists.rec\n  intro a ha\n  apply Exists.intro a\n  exact h a ha\n  exact h1\n'
+2025-02-26 09:14:20,263 - DEBUG - goals: []
+2025-02-26 09:14:20,263 - DEBUG - diagnostics: [{'source': 'Lean 4', 'severity': 1, 'range': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}, 'message': "tactic 'apply' failed, failed to unify\n  ?motive ?t\nwith\n  Exists q\nα : Sort u\np q : α → Prop\nh : ∀ (a : α), p a → q a\nh1 : Exists p\n⊢ Exists q", 'fullRange': {'start': {'line': 5, 'character': 2}, 'end': {'line': 5, 'character': 18}}}]
+2025-02-26 09:14:20,263 - INFO - Releasing resource test.
+2025-02-26 09:14:20,267 - INFO - Lean process released.
+2025-02-26 09:14:20,267 - INFO - Lsp client released.
+2025-02-26 09:14:20,267 - INFO - Resource test released.

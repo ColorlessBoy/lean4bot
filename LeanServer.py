@@ -69,6 +69,7 @@ class LeanServer:
 
     def getCodeInfo(self, code: str):
         logging.info("Received request to check_proof")
+        self.diagnostics[self.textDocument.uri] = []
         self.progressCompleted.clear()
         self.diagnosticsUpdated.clear()
         self.didChange(code.split("\n"))
@@ -129,20 +130,25 @@ class LeanServer:
             logging.error("getInteractiveGoals() failed: " + str(e))
         return result
 
-    def getDiagnostics(self, serverity=1):
+    def getDiagnostics(self):
         logging.info("getDiagnostics() start.")
-        logging.info(self.diagnostics)
-        if not self.progressCompleted.wait(100 * self.timeout):
-            logging.warning(f"Timeout waiting for progress completed after {100 * self.timeout} seconds")
+        uri = self.textDocument.uri
+        
+        # 等待进度完成
+        if not self.progressCompleted.wait(self.timeout):
+            logging.warning(f"Timeout waiting for progress after {self.timeout} seconds")
+        
+        # 等待诊断更新
         if not self.diagnosticsUpdated.wait(self.timeout):
             logging.warning(f"Timeout waiting for diagnostics after {self.timeout} seconds")
-        processed_diagnostics = [
-            diag
-            for diag in self.diagnostics[self.textDocument.uri]
-            if int(diag["severity"]) <= serverity
-        ]
-        logging.info("getDiagnostics() end.")
-        return processed_diagnostics
+            return []
+        
+        # 检查URI是否存在于diagnostics中
+        if uri not in self.diagnostics:
+            logging.warning(f"No diagnostics found for URI: {uri}")
+            return []
+        
+        return self.diagnostics.get(uri, [])
 
     def __initLeanProcess__(rootPath: str) -> subprocess.Popen:
         try:
@@ -165,11 +171,29 @@ class LeanServer:
 
     def __initLspClient__(self):
         def onDiagnostics(params):
-            logging.debug("onDiagnostics() " + str(params))
-            self.diagnostics[self.textDocument.uri] = params["diagnostics"]
-            self.diagnosticsUpdated.set()  # Signal that diagnostics are updated
+            logging.debug(f"onDiagnostics called with params: {params}")
+            uri = params.get("uri")
+            if not uri:
+                logging.warning("No uri in diagnostics params")
+                return
+                
+            diagnostics = [d for d in params.get("diagnostics", []) if int(d.get("severity", 1)) <= 1]
+            logging.debug(f"Received diagnostics: {diagnostics}")
+            
+            # 更新diagnostics
+            self.diagnostics[uri] = diagnostics
+            
+            # 只有在收到有效诊断信息时才设置标志
+            if len(diagnostics) > 0:
+                logging.info(f"Setting diagnostics flags for {len(diagnostics)} items")
+                self.diagnosticsUpdated.set()
+                self.progressCompleted.set()
+            logging.debug(f"Current diagnostics state: {self.diagnostics}")
+
 
         def onFileProgress(params):
+            if self.progressCompleted.is_set():
+                return
             logging.debug("onFileProgress()" + str(params))
             if len(params["processing"]) == 0:
                 self.progressCompleted.set()
