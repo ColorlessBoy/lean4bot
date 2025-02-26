@@ -50,7 +50,7 @@ class LLMService:
                     messages.append(
                         {
                             "role": "user",
-                            "content": f"回复的格式不错，请保持。证明代码有报错：```json {json.dumps(response_info, ensure_ascii=False)} ```",
+                            "content": f"回复的格式不错，请保持。证明代码有报错，注意中间的错误会导致后续证明都有问题：```json {json.dumps(response_info, ensure_ascii=False)} ```",
                         }
                     )
                 else:
