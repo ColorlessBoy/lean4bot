@@ -9,12 +9,12 @@ import argparse
 
 
 class LLMService:
-    def __init__(self, name: str):
+    def __init__(self, name: str, projectPath: str = None):
         self.client = OpenAI(
             api_key=os.getenv("DASHSCOPE_API_KEY"),
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )
-        self.leanServer = LeanServer(name)
+        self.leanServer = LeanServer(name, projectPath=projectPath)
 
     def release(self):
         self.client.close()
@@ -132,9 +132,15 @@ if __name__ == "__main__":
         help="Output file path (default: message.json)",
     )
     parser.add_argument(
+        "-p",
+        "--projectPath",
+        default=None,
+        help="Path to Lean project directory",
+    )
+    parser.add_argument(
         "-q",
         "--question",
-        default="import MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by",
+        default="import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\nimport MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.comm : ∀ {a b : Prop}, a ∧ b → b ∧ a := by",
         help="Question to process",
     )
     args = parser.parse_args()

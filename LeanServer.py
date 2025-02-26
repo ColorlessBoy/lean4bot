@@ -10,7 +10,6 @@ from pylspclient.lsp_pydantic_strcuts import (
     LanguageIdentifier,
     Position,
 )
-import json
 # 设置日志配置
 logging.basicConfig(
     filename="LeanServer.log",  # 日志输出到文件
@@ -29,25 +28,25 @@ class LeanServer:
     def __init__(
         self,
         name,
-        rootPath: Optional[str] = None,
+        projectPath: Optional[str] = None,
         fileName: Optional[str] = None,
         text: list[str] = [],
         timeout = 20,
     ):
-        if rootPath is None:
-            rootPath = Path(__file__).parent / "LeanProject"
+        if projectPath is None:
+            projectPath = Path(__file__).parent / "miniF2F-lean4"
         if fileName is None:
             fileName = f"{name}.lean"
         self.name = name
         self.timeout = timeout
-        self.rootPath = rootPath
-        self.rootUri = toUri(rootPath)
-        self.leanProcess = LeanServer.__initLeanProcess__(rootPath)
+        self.rootPath = projectPath
+        self.rootUri = toUri(projectPath)
+        self.leanProcess = LeanServer.__initLeanProcess__(projectPath)
         self.diagnostics = {}
-        self.diagnostics_updated = Event()  # Add event flag
-        self.progress_completed = Event()  # Add event flag
+        self.diagnosticsUpdated = Event()  # Add event flag
+        self.progressCompleted = Event()  # Add event flag
         self.lspClient = self.__initLspClient__()
-        filePath = rootPath / fileName
+        filePath = projectPath / fileName
         self.textDocument: TextDocumentItem = LeanServer.__init_text_document__(
             filePath, text
         )
@@ -70,8 +69,8 @@ class LeanServer:
 
     def getCodeInfo(self, code: str):
         logging.info("Received request to check_proof")
-        self.progress_completed.clear()
-        self.diagnostics_updated.clear()
+        self.progressCompleted.clear()
+        self.diagnosticsUpdated.clear()
         self.didChange(code.split("\n"))
         diagnostics = self.getDiagnostics()
         if len(diagnostics) > 0:
@@ -133,9 +132,9 @@ class LeanServer:
     def getDiagnostics(self, serverity=1):
         logging.info("getDiagnostics() start.")
         logging.info(self.diagnostics)
-        if not self.progress_completed.wait(100 * self.timeout):
+        if not self.progressCompleted.wait(100 * self.timeout):
             logging.warning(f"Timeout waiting for progress completed after {100 * self.timeout} seconds")
-        if not self.diagnostics_updated.wait(self.timeout):
+        if not self.diagnosticsUpdated.wait(self.timeout):
             logging.warning(f"Timeout waiting for diagnostics after {self.timeout} seconds")
         processed_diagnostics = [
             diag
@@ -168,12 +167,12 @@ class LeanServer:
         def onDiagnostics(params):
             logging.debug("onDiagnostics() " + str(params))
             self.diagnostics[self.textDocument.uri] = params["diagnostics"]
-            self.diagnostics_updated.set()  # Signal that diagnostics are updated
+            self.diagnosticsUpdated.set()  # Signal that diagnostics are updated
 
         def onFileProgress(params):
             logging.debug("onFileProgress()" + str(params))
             if len(params["processing"]) == 0:
-                self.progress_completed.set()
+                self.progressCompleted.set()
         
         def emptyCallback(params):
             pass

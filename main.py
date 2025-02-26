@@ -11,7 +11,7 @@ logging.basicConfig(
 
 leanServer = LeanServer(
     "test",
-    rootPath=Path(__file__).parent / "miniF2F-lean4",
+    projectPath=Path(__file__).parent / "miniF2F-lean4",
     text=[
         "import MiniF2F.Minif2fImport",
         "open BigOperators Real Nat Topology",
