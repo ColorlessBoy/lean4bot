@@ -129,7 +129,7 @@ class LLMService:
                     messages.append(
                         {
                             "role": "user",
-                            "content": f"回复的格式不错，请保持。证明代码有报错，不要被示例里的intro误导，你可能不需要。注意中间的错误会导致后续证明都有问题，顺便提醒一下你应该在description中包含对报错信息的理解，避免重复犯错：```json {json.dumps(response_info, ensure_ascii=False)} ```",
+                            "content": f"回复的格式不错，请保持。证明代码有报错，注意中间的错误会导致后续证明都有问题，顺便提醒一下你应该在description中包含对报错信息的理解，避免重复犯错：```json {json.dumps(response_info, ensure_ascii=False)} ```",
                         }
                     )
                 else:

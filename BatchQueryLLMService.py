@@ -16,7 +16,7 @@ for theorem in tqdm(theorems):
     if output.exists():
         continue
     code = "import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\n"+theorem["code"]
-    message = aliyunService.chatSession(code)
+    message = aliyunService.chatSession(code, theorem["name"])
     with open(output, "w", encoding="utf-8") as f:
         json.dump(message, f, ensure_ascii=False, indent=2)
 
