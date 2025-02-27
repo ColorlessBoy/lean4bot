@@ -37,22 +37,6 @@ initPrompt = [
   },
   {
     "role": "user",
-    "content": "上一题你证明正确。请听下一题：import MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp : {α : Sort u} -> {p q : α -> Prop} -> (∀ (a : α), p a -> q a) -> Exists p -> Exists q := by"
-  },
-  {
-    "role": "assistant",
-    "content": "```json\n{\n  \"description\": \"我的思路是：首先通过 `intro` 引入所有假设，然后使用 `Exists.rec` 对 `Exists p` 进行递归处理。`Exists.rec` 需要一个函数，该函数接受一个 `a : α` 和一个 `h : p a`，并返回 `Exists q`。通过 `h₁ a h` 可以得到 `q a`，然后使用 `Exists.intro a` 构造 `Exists q`。\",\n  \"info\": {\n    \"3\": [\"⊢ ∀ {α : Sort u} {p q : α → Prop}, (∀ (a : α), p a → q a) → Exists p → Exists q\"],\n    \"4\": [\"α : Sort u, p, q : α → Prop, h₁ : ∀ (a : α), p a → q a, h₂ : Exists p ⊢ Exists q\"],\n    \"5\": [\"α : Sort u, p, q : α → Prop, h₁ : ∀ (a : α), p a → q a, a : α, h : p a ⊢ Exists q\"]\n  },\n  \"code\": \"import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem Exists.imp : {α : Sort u} → {p q : α → Prop} → (∀ (a : α), p a → q a) → Exists p → Exists q := by\\n  intro α p q h₁ h₂\\n  exact Exists.rec (fun a h => Exists.intro a (h₁ a h)) h₂\"\n}\n```"
-  },
-  {
-    "role": "user",
-    "content": "上一题你证明正确。请听下一题：import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\nimport MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.comm {a b : Prop} (h : a ∧ b) : b ∧ a := by"
-  },
-  {
-    "role": "assistant",
-    "content": "```json\n{\n  \"description\": \"我的思路是：首先通过 `intro` 引入假设 `h : a ∧ b`，然后使用 `And.rec` 对 `a ∧ b` 进行递归处理。`And.rec` 需要一个函数，该函数接受 `ha : a` 和 `hb : b`，并返回 `b ∧ a`。通过 `And.intro hb ha` 构造 `b ∧ a`。\",\n  \"info\": {\n    \"3\": [\"a, b : Prop, h : a ∧ b ⊢ b ∧ a\"],\n    \"4\": [\"a, b : Prop, ha : a, hb : b ⊢ b ∧ a\"]\n  },\n  \"code\": \"import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.comm {a b : Prop} (h : a ∧ b) : b ∧ a := by\\n  exact And.rec (fun ha hb => And.intro hb ha) h\"\n}\n```"
-  },
-  {
-    "role": "user",
     "content": "上一题你证明正确。请听下一题：import MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp {α : Sort u} {p q : α -> Prop} (h1 : ∀ (a : α), p a -> q a) (h2 : Exists p) : Exists q := by"
   },
   {

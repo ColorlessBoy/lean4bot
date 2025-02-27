@@ -38,32 +38,60 @@ class LLMService:
         normalized_code = ' '.join(code.split())
         return hashlib.md5(normalized_code.encode('utf-8')).hexdigest()
 
-    def chatSession(self, question, maxTries=10):
+    def chatSession(self, question, name, maxTries=10):
+        question = question.strip()
         messages = [*initPrompt]
-        messages.append(
-            {
-                "role": "user",
-                "content": "上一题你证明正确。请听下一题："
-                + question,
-            },
-        )
+        messages.append({
+            "role": "user",
+            "content": "上一题你证明正确。请听下一题：" + question,
+        })
         code_counts: dict[str, int] = {}
+        
         for _ in range(maxTries):
             try:
                 stream = self.client.chat.completions.create(
                     model=MODEL_NAME,
                     messages=messages,
-                    stream=True,  # 启用流式输出
+                    stream=True,
                     temperature=0.6,
                     max_tokens=16384,
                 )
+                
+                # 添加调试日志
+                print("\n开始处理响应流...")
                 response = LLMService.__processStreamResponse__(stream)
-                messages.append({"role": "assistant", "content": response["content"]})
-                answer = LLMService.__extractJsonContent__(response["content"])
-                answer = json.loads(answer)
-                print("answer:", answer)
-                current_code = answer["code"]
-                code_hash = self.__hash_code__(answer["code"])
+                print("\n响应内容:", json.dumps(response, ensure_ascii=False, indent=2))
+                
+                try:
+                    print("\n提取JSON内容...")
+                    answer = LLMService.__extractJsonContent__(response["content"])
+                    print("\n解析前的JSON字符串:", answer)
+                    answer = json.loads(answer)
+                    print("\n解析后的JSON对象:", json.dumps(answer, ensure_ascii=False, indent=2))
+                    
+                except json.JSONDecodeError as je:
+                    print(f"\nJSON解析错误位置: 行 {je.lineno}, 列 {je.colno}")
+                    print(f"错误信息: {je.msg}")
+                    print(f"原始内容:\n{response['content']}")
+                    continue  # 不要立即终止，给出另一次尝试的机会
+                    
+                except Exception as e:
+                    print(f"\n其他错误: {type(e).__name__}")
+                    print(f"错误信息: {str(e)}")
+                    print(f"原始内容:\n{response['content']}")
+                    continue
+                    
+                current_code = answer["code"].strip()
+                if name not in current_code:
+                    # 简单防作弊检查 
+                    print("\n题目被修改")
+                    messages.append({
+                        "role": "user",
+                        "content": f"题目被你修改了，这是严重的作弊行为。请新作答：{question}"
+                    })
+                    continue
+
+                code_hash = self.__hash_code__(current_code)
                 if code_hash in code_counts:
                     if code_counts[code_hash] >= 3:
                         print("\n连续3次生成重复代码，系统决定终止本次证明尝试。")
@@ -75,15 +103,25 @@ class LLMService:
                         )
                         break
                     code_counts[code_hash] += 1
-                    print(f"\n第 {code_counts[current_code]} 次出现相同的代码，请重新思考并给出不同的证明方法。")
+                    print(f"\n第 {code_counts[code_hash]} 次出现相同的代码，请重新思考并给出不同的证明方法。")
                     messages.append({
                         "role": "user",
-                        "content": f"这是第 {code_counts[current_code]} 次出现相同的代码，请重新思考并给出不同的证明方法。"
+                        "content": f"这是第 {code_counts[code_hash]} 次出现相同的代码，请重新思考并给出不同的证明方法。{question}"
                     })
                     continue
                 else:
                     code_counts[code_hash] = 1
-                info = self.leanServer.getCodeInfo(answer["code"])
+                info = self.leanServer.getCodeInfo(current_code)
+                print("\n获取到的代码信息:", json.dumps(info, ensure_ascii=False, indent=2))
+
+                if info is None:
+                    print("\n获取代码信息失败")
+                    messages.append({
+                        "role": "user",
+                        "content": "获取代码信息失败，请重新生成证明。"
+                    })
+                    continue
+
                 if len(info["diagnostics"]) > 0:
                     print("\nerror diagnostics")
                     response_info = {"diagnostics": info["diagnostics"]}
@@ -119,8 +157,14 @@ class LLMService:
                     )
                     break
             except Exception as e:
-                print(f"\n请求出错：{str(e)}")
+                print("\n请求出错详细信息:")
+                print(f"错误类型: {type(e).__name__}")
+                print(f"错误信息: {str(e)}")
+                print("堆栈跟踪:")
+                import traceback
+                traceback.print_exc()
                 break
+                
         return messages
 
     def __processStreamResponse__(stream, isStream=True):
@@ -147,13 +191,28 @@ class LLMService:
 
         return {"reasoning": full_reasoning.strip(), "content": full_content.strip()}
 
+    @staticmethod
     def __extractJsonContent__(text):
         """从markdown代码块中提取JSON内容"""
-        pattern = r"```json\n?(.*?)\n?```"
-        match = re.search(pattern, text, re.DOTALL)
-        if match:
-            return match.group(1).strip()
-        return text
+        print("\n开始提取JSON内容...")
+        print(f"输入文本:\n{text}")
+        
+        # 检查是否是完整的JSON
+        try:
+            json.loads(text)
+            print("输入已经是有效的JSON")
+            return text
+        except json.JSONDecodeError:
+            # 不是完整JSON，尝试从markdown中提取
+            pattern = r"```json\n?(.*?)\n?```"
+            match = re.search(pattern, text, re.DOTALL)
+            if match:
+                content = match.group(1).strip()
+                print(f"从markdown提取的内容:\n{content}")
+                return content
+            
+            print("未找到JSON代码块，返回原始文本")
+            return text
 
     def __compareInfo__(
         responseInfo: dict[str, list[str]], leanInfo: dict[str, list[str]]
@@ -186,10 +245,16 @@ if __name__ == "__main__":
         default="import MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp {α : Sort u} {p q : α -> Prop} (h1 : ∀ (a : α), p a -> q a) (h2 : Exists p) : Exists q := by",
         help="Question to process",
     )
+    parser.add_argument(
+        "-n",
+        "--name",
+        default="Exists.imp",
+        help="Question name",
+    )
     args = parser.parse_args()
 
     aliyunService = LLMService("test")
-    message = aliyunService.chatSession(args.question)
+    message = aliyunService.chatSession(args.question, args.name)
 
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(message, f, ensure_ascii=False, indent=2)
