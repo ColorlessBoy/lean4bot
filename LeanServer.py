@@ -177,7 +177,7 @@ class LeanServer:
                 logging.warning("No uri in diagnostics params")
                 return
                 
-            diagnostics = [d for d in params.get("diagnostics", []) if int(d.get("severity", 1)) <= 1]
+            diagnostics = [d for d in params.get("diagnostics", []) if int(d.get("severity", 1)) <= 1 or int(d.get("severity", 1)) == 2 and "sorry" in d.get("message", "")]
             logging.debug(f"Received diagnostics: {diagnostics}")
             
             # 更新diagnostics
