@@ -65,20 +65,30 @@ class LLMService:
                 try:
                     print("\n提取JSON内容...")
                     answer = LLMService.__extractJsonContent__(response["content"])
+                    messages.append({
+                        "role": "assistant",
+                        "content": response["content"],
+                    })
                     print("\n解析前的JSON字符串:", answer)
                     answer = json.loads(answer)
                     print("\n解析后的JSON对象:", json.dumps(answer, ensure_ascii=False, indent=2))
-                    
                 except json.JSONDecodeError as je:
                     print(f"\nJSON解析错误位置: 行 {je.lineno}, 列 {je.colno}")
                     print(f"错误信息: {je.msg}")
                     print(f"原始内容:\n{response['content']}")
+                    messages.append({
+                        "role": "user",
+                        "content": f"\nJSON解析错误位置: 行 {je.lineno}, 列 {je.colno}。错误信息: {je.msg}"
+                    })
                     continue  # 不要立即终止，给出另一次尝试的机会
-                    
                 except Exception as e:
                     print(f"\n其他错误: {type(e).__name__}")
                     print(f"错误信息: {str(e)}")
                     print(f"原始内容:\n{response['content']}")
+                    messages.append({
+                        "role": "user",
+                        "content": f"其他错误: {type(e).__name__}，{str(e)}"
+                    })
                     continue
                     
                 current_code = answer["code"].strip()
@@ -93,8 +103,9 @@ class LLMService:
 
                 code_hash = self.__hash_code__(current_code)
                 if code_hash in code_counts:
+                    code_counts[code_hash] += 1
                     if code_counts[code_hash] >= 3:
-                        print("\n连续3次生成重复代码，系统决定终止本次证明尝试。")
+                        print("\n超过3次生成重复代码，系统决定终止本次证明尝试。")
                         messages.append(
                             {
                                 "role": "user",
@@ -102,8 +113,7 @@ class LLMService:
                             }
                         )
                         break
-                    code_counts[code_hash] += 1
-                    print(f"\n第 {code_counts[code_hash]} 次出现相同的代码，请重新思考并给出不同的证明方法。")
+                    print(f"\n第 {code_counts[code_hash]} 次出现相同的代码，严重的偷懒行为！请重新思考并给出不同的证明方法。")
                     messages.append({
                         "role": "user",
                         "content": f"这是第 {code_counts[code_hash]} 次出现相同的代码，请重新思考并给出不同的证明方法。{question}"
