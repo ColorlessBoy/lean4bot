@@ -53,7 +53,7 @@ class LLMService:
                     model=MODEL_NAME,
                     messages=messages,
                     stream=True,
-                    temperature=0.6,
+                    temperature=0.5,
                     max_tokens=16384,
                 )
                 
@@ -113,10 +113,10 @@ class LLMService:
                             }
                         )
                         break
-                    print(f"\n第 {code_counts[code_hash]} 次出现相同的代码，你是蠢货吗？请重新思考并给出不同的证明方法。")
+                    print(f"\n你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。")
                     messages.append({
                         "role": "user",
-                        "content": f"这是第 {code_counts[code_hash]} 次出现相同的代码，请重新思考并给出不同的证明方法。"
+                        "content": f"你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。"
                     })
                     continue
                 else:
