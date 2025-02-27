@@ -113,10 +113,10 @@ class LLMService:
                             }
                         )
                         break
-                    print(f"\n第 {code_counts[code_hash]} 次出现相同的代码，严重的偷懒行为！请重新思考并给出不同的证明方法。")
+                    print(f"\n第 {code_counts[code_hash]} 次出现相同的代码，你是蠢货吗？请重新思考并给出不同的证明方法。")
                     messages.append({
                         "role": "user",
-                        "content": f"这是第 {code_counts[code_hash]} 次出现相同的代码，请重新思考并给出不同的证明方法。{question}"
+                        "content": f"这是第 {code_counts[code_hash]} 次出现相同的代码，请重新思考并给出不同的证明方法。"
                     })
                     continue
                 else:
