@@ -59,7 +59,7 @@ class LLMService:
                 
                 # 添加调试日志
                 print("\n开始处理响应流...")
-                response = LLMService.__processStreamResponse__(stream)
+                response, hasRepeat = LLMService.__processStreamResponse__(stream)
                 print("\n响应内容:", json.dumps(response, ensure_ascii=False, indent=2))
                 
                 try:
@@ -69,6 +69,12 @@ class LLMService:
                         "role": "assistant",
                         "content": response["content"],
                     })
+                    if hasRepeat:
+                        messages.append({
+                            "role": "user",
+                            "content": "你进入逻辑混乱的死循环状态了，非常危险，请重新思考正确答案。"
+                        })
+                        continue
                     print("\n解析前的JSON字符串:", answer)
                     answer = json.loads(answer)
                     print("\n解析后的JSON对象:", json.dumps(answer, ensure_ascii=False, indent=2))
@@ -135,7 +141,10 @@ class LLMService:
                 if len(info["diagnostics"]) > 0:
                     print("\nerror diagnostics")
                     response_info = {"diagnostics": info["diagnostics"]}
-                    print("response_info:", response_info)
+                    json_response_info = json.dumps(response_info, ensure_ascii=False)
+                    print("response_info:", json_response_info)
+                    if "tactic 'introN' failed" in json_response_info:
+                        json_response_info = "请不要被示例里的intro误导，可能根本不需要intro。" + json_response_info
                     messages.append(
                         {
                             "role": "user",
@@ -176,11 +185,31 @@ class LLMService:
                 break
                 
         return messages
+    
+    def __hasRepeat__(content: str, window = 100, threshold = 10) -> bool:
+        if len(content) <= window * threshold:
+            return False
+        pattern = content[-window:]  # 获取最后window个字符
+        if not pattern.strip():  # 忽略纯空白的模式
+            return False
+            
+        # 计算重叠出现的次数
+        count = 0
+        pos = 0
+        while True:
+            pos = content.find(pattern, pos)
+            if pos == -1:
+                break
+            count += 1
+            pos += 1  # 移动一个字符继续查找
+            
+        return count > threshold
 
     def __processStreamResponse__(stream, isStream=True):
         """处理流式响应，收集完整回复"""
         full_reasoning = ""
         full_content = ""
+        hasRepeat = False
 
         for chunk in stream:
             if isStream:
@@ -194,12 +223,16 @@ class LLMService:
                     content = chunk.choices[0].delta.content or ""
                     print(content, end="", flush=True)
                     full_content += content
+                    if LLMService.__hasRepeat__(full_content):
+                        print("\n检测到重复内容，终止流式处理")
+                        hasRepeat = True
+                        break
             else:
                 # 非流式处理
                 full_reasoning = chunk.choices[0].message.reasoning_content
                 full_content = chunk.choices[0].message.content
 
-        return {"reasoning": full_reasoning.strip(), "content": full_content.strip()}
+        return {"reasoning": full_reasoning.strip(), "content": full_content.strip()}, hasRepeat
 
     @staticmethod
     def __extractJsonContent__(text):
