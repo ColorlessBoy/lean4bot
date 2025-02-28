@@ -8,16 +8,17 @@ import re
 import argparse
 import hashlib
 
-"""
 # 阿里云 
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-MODEL_NAME = "deepseek-v3"
+MODEL_NAME = "deepseek-r1"
 """
 # 火山云 
 API_KEY = os.getenv("ARK_API_KEY")
 BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
-MODEL_NAME = "deepseek-v3-241226"
+# MODEL_NAME = "deepseek-v3-241226"
+MODEL_NAME = "deepseek-r1-250120"
+"""
 
 class LLMService:
     def __init__(self, name: str, projectPath: str = None):
@@ -43,7 +44,7 @@ class LLMService:
         messages = [*initPrompt]
         messages.append({
             "role": "user",
-            "content": "上一题你证明正确。请听下一题：" + question,
+            "content": "上一题你证明正确。请听下一题(请注意回答的code字段代码要保持原题目不变，不要忽略小于号）：" + question,
         })
         code_counts: dict[str, int] = {}
         
@@ -53,7 +54,7 @@ class LLMService:
                     model=MODEL_NAME,
                     messages=messages,
                     stream=True,
-                    temperature=0.7,
+                    temperature=0.6,
                     max_tokens=16384,
                 )
                 
@@ -84,7 +85,7 @@ class LLMService:
                     print(f"原始内容:\n{response['content']}")
                     messages.append({
                         "role": "user",
-                        "content": f"\nJSON解析错误位置: 行 {je.lineno}, 列 {je.colno}。错误信息: {je.msg}"
+                        "content": '你是不是忘记遵循格式了```json\n{"description":xxx,"info":xxx,"code":xxx}\n```'
                     })
                     continue  # 不要立即终止，给出另一次尝试的机会
                 except Exception as e:
@@ -106,6 +107,12 @@ class LLMService:
                         "content": f"题目被你修改了，这是严重的作弊行为。请新作答：{question}"
                     })
                     continue
+                if "namespace PlayGround" not in current_code:
+                    current_code = "namespace PlayGround\n" + current_code
+                if "open BigOperators Real Nat Topology" not in current_code:
+                    current_code = "open BigOperators Real Nat Topology\n" + current_code
+                if "import MiniF2F.Minif2fImport" not in current_code:
+                    current_code = "import MiniF2F.Minif2fImport\n" + current_code
 
                 code_hash = self.__hash_code__(current_code)
                 if code_hash in code_counts:
@@ -122,7 +129,7 @@ class LLMService:
                     print(f"\n你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。")
                     messages.append({
                         "role": "user",
-                        "content": f"你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。"
+                        "content": f"你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。 {str(self.leanServer.diagnostics)}"
                     })
                     continue
                 else:

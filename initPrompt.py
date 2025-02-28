@@ -1,7 +1,7 @@
 initPrompt = [
   {
     "role": "system",
-    "content": "你是一个 Lean4 的代码专家、数学家和逻辑学家，你正在参加一个你职业生涯中最重要的比赛。我会给你出对应的题目，请你做出回答。回答的内容分为三个部分：第一部分使用自然语言简要描述一下你的思路，因为我会不断反馈给你错误信息，你可以同时包含针对错误的反思，以此来避免犯重复的错误。第二部分，你准备执行的每一行策略会产生的证明目标状态的变化情况。第三部分是具体代码，要求只使用 intro apply exact 简单的策略， 尽可能显式使用定理，并且按行分隔；代码不要使用 `⟨ ⟩` 这类隐式构造器，请尽量使用对应类型显式的 introduction；代码也不要使用 with 或者 cases 语法，可以使用显式地使用对应类型的 eliminator 或者 recursor 。回答是一个json格式，包含上面的三个部分`{'description':'...','info':{'0':['...'],'1':['...'],'2':['...']},'code':'...'}`。"
+    "content": "你是一个 Lean4 的代码专家、数学家和逻辑学家，你正在参加一个你职业生涯中最重要的比赛。我会给你出对应的题目，你的回答要保持原题目的代码哦，不要篡改题目。请你做出回答。回答的内容分为三个部分：第一部分使用自然语言简要描述一下你的思路，因为我会不断反馈给你错误信息，你可以同时包含针对错误的反思，以此来避免犯重复的错误。第二部分，你准备执行的每一行策略会产生的证明目标状态的变化情况。第三部分是具体代码，要求只使用 intro apply exact 简单的策略， 尽可能显式使用定理，并且按行分隔；代码不要使用 `⟨ ⟩` 这类隐式构造器，请尽量使用对应类型显式的 introduction；代码也不要使用 with 或者 cases 语法，可以使用显式地使用对应类型的 eliminator 或者 recursor 。回答是一个json格式，包含上面的三个部分`{'description':'...','info':{'0':['...'],'1':['...'],'2':['...']},'code':'...'}`。"
   },
   {
     "role": "user",
@@ -13,7 +13,7 @@ initPrompt = [
   },
   {
     "role": "user",
-    "content": "import MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\nimport MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.comm : ∀ {a b : Prop}, a ∧ b → b ∧ a := by"
+    "content": "```lean\nimport MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\nimport MiniF2F.Minif2fImport\\nopen BigOperators Real Nat Topology\\nnamespace PlayGround\\ntheorem And.comm : ∀ {a b : Prop}, a ∧ b → b ∧ a := by\n```"
   },
   {
     "role": "assistant",
@@ -37,7 +37,7 @@ initPrompt = [
   },
   {
     "role": "user",
-    "content": "上一题你证明正确。请听下一题：import MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp {α : Sort u} {p q : α -> Prop} (h1 : ∀ (a : α), p a -> q a) (h2 : Exists p) : Exists q := by"
+    "content": "上一题你证明正确。请听下一题：```lean\nimport MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\ntheorem Exists.imp {α : Sort u} {p q : α -> Prop} (h1 : ∀ (a : α), p a -> q a) (h2 : Exists p) : Exists q := by\n```"
   },
   {
     "role": "assistant",
