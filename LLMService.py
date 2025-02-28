@@ -8,6 +8,7 @@ import re
 import argparse
 import hashlib
 
+"""
 # 阿里云 
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -18,7 +19,6 @@ API_KEY = os.getenv("ARK_API_KEY")
 BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
 # MODEL_NAME = "deepseek-v3-241226"
 MODEL_NAME = "deepseek-r1-250120"
-"""
 
 class LLMService:
     def __init__(self, name: str, projectPath: str = None):
@@ -232,11 +232,13 @@ class LLMService:
                 # 实时打印流式输出
                 if hasattr(chunk.choices[0].delta, "reasoning_content"):
                     reasoning = chunk.choices[0].delta.reasoning_content or ""
+                    reasoning = reasoning.replace('&lt;', '<').replace('&gt;', '>')
                     print(reasoning, end="", flush=True)
                     full_reasoning += reasoning
 
                 if hasattr(chunk.choices[0].delta, "content"):
                     content = chunk.choices[0].delta.content or ""
+                    content = content.replace('&lt;', '<').replace('&gt;', '>')
                     print(content, end="", flush=True)
                     full_content += content
                     if LLMService.__hasRepeat__(full_content):
@@ -245,8 +247,10 @@ class LLMService:
                         break
             else:
                 # 非流式处理
-                full_reasoning = chunk.choices[0].message.reasoning_content
-                full_content = chunk.choices[0].message.content
+                full_reasoning = chunk.choices[0].message.reasoning_content.replace('&lt;', '<').replace('&gt;', '>')
+                full_content = chunk.choices[0].message.content.replace('&lt;', '<').replace('&gt;', '>')
+        
+        print("full_content:\n%s", full_content)
 
         return {"reasoning": full_reasoning.strip(), "content": full_content.strip()}, hasRepeat
 
