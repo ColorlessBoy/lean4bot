@@ -53,7 +53,7 @@ class LLMService:
                     model=MODEL_NAME,
                     messages=messages,
                     stream=True,
-                    temperature=0.5,
+                    temperature=0.7,
                     max_tokens=16384,
                 )
                 
