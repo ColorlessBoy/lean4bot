@@ -47,6 +47,7 @@ class LLMService:
             "content": "上一题你证明正确。请听下一题(请注意回答的code字段代码要保持原题目不变，不要忽略小于号）：" + question,
         })
         code_counts: dict[str, int] = {}
+        print("新的题目\n", question)
         
         for _ in range(maxTries):
             try:
@@ -105,6 +106,14 @@ class LLMService:
                     messages.append({
                         "role": "user",
                         "content": f"题目被你修改了，这是严重的作弊行为。请新作答：{question}"
+                    })
+                    continue
+                if "<" in question and "<" not in current_code:
+                    # 简单防作弊检查
+                    print("\n小于号丢失")
+                    messages.append({
+                        "role": "user",
+                        "content": f"题目被你修改了，小于号被你错误地删去了，无法通过编译器的编译：{question}"
                     })
                     continue
                 if "namespace PlayGround" not in current_code:

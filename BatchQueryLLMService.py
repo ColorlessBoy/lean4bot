@@ -11,11 +11,16 @@ root = Path(__file__).parent / "TestDeepseekR1"
 
 aliyunService = LLMService("TestDeepseekR1")
 
-for theorem in tqdm(theorems[:3]):
+for theorem in tqdm(theorems[:2]):
     output = root / (theorem["name"] + ".json")
     if output.exists():
         continue
-    code = "```lean\nimport MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\n"+theorem["code"]+"\n```"
+    code = "\nimport MiniF2F.Minif2fImport\nopen BigOperators Real Nat Topology\nnamespace PlayGround\n"+theorem["code"]+"\n"
+    """
+    if "<" in code:
+        print("skip", theorem["name"])
+        continue
+    """
     message = aliyunService.chatSession(code, theorem["name"])
     with open(output, "w", encoding="utf-8") as f:
         json.dump(message, f, ensure_ascii=False, indent=2)
