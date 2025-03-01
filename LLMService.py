@@ -8,6 +8,7 @@ import re
 import argparse
 import hashlib
 
+"""
 # 阿里云 
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -18,7 +19,6 @@ API_KEY = os.getenv("ARK_API_KEY")
 BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
 # MODEL_NAME = "deepseek-v3-241226"
 MODEL_NAME = "deepseek-r1-250120"
-"""
 
 class LLMService:
     def __init__(self, name: str, projectPath: str = None):
@@ -47,6 +47,7 @@ class LLMService:
             "content": "上一题你证明正确。请听下一题(请注意回答的code字段代码要保持原题目不变，不要忽略小于号）：" + question,
         })
         code_counts: dict[str, int] = {}
+        diagnostic_map: dict[str, str] = {}
         print("新的题目\n", question)
         
         for _ in range(maxTries):
@@ -85,10 +86,22 @@ class LLMService:
                     print(f"\nJSON解析错误位置: 行 {je.lineno}, 列 {je.colno}")
                     print(f"错误信息: {je.msg}")
                     print(f"原始内容:\n{response}")
-                    messages.append({
-                        "role": "user",
-                        "content": '你是不是忘记遵循格式了```json\n{"description":xxx,"info":xxx,"code":xxx}\n```'
-                    })
+                    if "Invalid \escape" in je.msg:
+                        messages.append({
+                            "role": "user",
+                            "content": f"你是不是没有注意latex字符串会导致JSON解析时的escape问题，注意转义字符的使用。error line {je.lineno}, error col {je.colno}, error: {je.msg}。"
+                        })
+                        continue
+                    elif len(answer) == 0 or "Expecting value" in je.msg:
+                        messages.append({
+                            "role": "user",
+                            "content": '你是不是忘记遵循回答JSON格式了，识别到的JSON内容为空。请遵循```json\n{"description":xxx,"info":xxx,"code":xxx}\n```'
+                        })
+                    else:
+                        messages.append({
+                            "role": "user",
+                            "content": '解析JSON失败，识别到的JSON内容为：{answer}；error line {je.lineno}, error col {je.colno}, error: {je.msg}。'
+                        })
                     continue  # 不要立即终止，给出另一次尝试的机会
                 except Exception as e:
                     print(f"\n其他错误: {type(e).__name__}")
@@ -139,7 +152,7 @@ class LLMService:
                     print(f"\n你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。")
                     messages.append({
                         "role": "user",
-                        "content": f"你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。 {str(self.leanServer.diagnostics)}"
+                        "content": f"你第 {code_counts[code_hash]} 次提交相同的错误代码，智者不会在同一一个地方摔倒两次，请重新思考并给出不同的证明方法。 {diagnostic_map.get(code_hash, '')}"
                     })
                     continue
                 else:
@@ -159,6 +172,7 @@ class LLMService:
                     print("\nerror diagnostics")
                     response_info = {"diagnostics": info["diagnostics"]}
                     json_response_info = json.dumps(response_info, ensure_ascii=False)
+                    diagnostic_map[code_hash] = json_response_info
                     print("response_info:", json_response_info)
                     if "tactic 'introN' failed" in json_response_info:
                         json_response_info = "请不要被示例里的intro误导，可能根本不需要intro。" + json_response_info
@@ -221,43 +235,6 @@ class LLMService:
             pos += 1  # 移动一个字符继续查找
             
         return count > threshold
-    @staticmethod
-    def __escape_latex__(text: str) -> str:
-        """Escape LaTeX expressions properly"""
-        # Common LaTeX commands that need escaping
-        latex_commands = [
-            r'\cdot', r'\frac', r'\sum', r'\prod', r'\int', r'\sqrt',
-            r'\alpha', r'\beta', r'\gamma', r'\delta', r'\epsilon',
-            r'\leftarrow', r'\rightarrow', r'\leq', r'\geq',
-            r'\exists', r'\forall', r'\in', r'\subset',
-            r'\cup', r'\cap', r'\wedge', r'\vee',
-            r'\mathbb', r'\mathcal', r'\mathrm',
-            r'\left', r'\right', r'\big', r'\Big',
-            r'\text', r'\infty'
-        ]
-        
-        # First save all LaTeX expressions
-        latex_blocks = []
-        def save_latex(match):
-            latex_blocks.append(match.group(0))
-            return f"LATEX_BLOCK_{len(latex_blocks)-1}"
-        
-        # Save LaTeX blocks (both inline and display)
-        text = re.sub(r'\\\((.*?)\\\)|\\\[(.*?)\\\]', save_latex, text, flags=re.DOTALL)
-        
-        # Process each LaTeX block
-        for i, block in enumerate(latex_blocks):
-            # Double escape LaTeX commands
-            for cmd in latex_commands:
-                # Avoid double escaping already escaped commands
-                block = re.sub(r'(?<!\\)' + re.escape(cmd), '\\' + cmd, block)
-            latex_blocks[i] = block
-        
-        # Restore LaTeX blocks in one pass
-        for i, block in enumerate(latex_blocks):
-            text = text.replace(f"LATEX_BLOCK_{i}", block, 1)
-        
-        return text
 
     def __processStreamResponse__(stream, isStream=True):
         """处理流式响应，收集完整回复"""
@@ -289,7 +266,6 @@ class LLMService:
                 full_content = chunk.choices[0].message.content.replace('&lt;', '<').replace('&gt;', '>')
         
         print("full_content:\n", full_content)
-        full_content = LLMService.__escape_latex__(full_content)
         return {"reasoning": full_reasoning.strip(), "content": full_content.strip()}, hasRepeat
 
     @staticmethod
