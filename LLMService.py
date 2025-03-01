@@ -8,7 +8,6 @@ import re
 import argparse
 import hashlib
 
-"""
 # 阿里云 
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -19,6 +18,7 @@ API_KEY = os.getenv("ARK_API_KEY")
 BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
 # MODEL_NAME = "deepseek-v3-241226"
 MODEL_NAME = "deepseek-r1-250120"
+"""
 
 class LLMService:
     def __init__(self, name: str, projectPath: str = None):
@@ -61,10 +61,10 @@ class LLMService:
                 
                 # 添加调试日志
                 print("\n开始处理响应流...")
-                response, hasRepeat = LLMService.__processStreamResponse__(stream)
-                print("\n响应内容:", json.dumps(response, ensure_ascii=False, indent=2))
-                
                 try:
+                    response, hasRepeat = LLMService.__processStreamResponse__(stream)
+                    print("\n响应内容:", json.dumps(response, ensure_ascii=False, indent=2))
+                
                     print("\n提取JSON内容...")
                     answer = LLMService.__extractJsonContent__(response["content"])
                     messages.append({
@@ -72,6 +72,7 @@ class LLMService:
                         "content": response["content"],
                     })
                     if hasRepeat:
+                        print("\n检测到重复代码")
                         messages.append({
                             "role": "user",
                             "content": "你进入逻辑混乱的死循环状态了，非常危险，请重新思考正确答案。"
@@ -83,7 +84,7 @@ class LLMService:
                 except json.JSONDecodeError as je:
                     print(f"\nJSON解析错误位置: 行 {je.lineno}, 列 {je.colno}")
                     print(f"错误信息: {je.msg}")
-                    print(f"原始内容:\n{response['content']}")
+                    print(f"原始内容:\n{response}")
                     messages.append({
                         "role": "user",
                         "content": '你是不是忘记遵循格式了```json\n{"description":xxx,"info":xxx,"code":xxx}\n```'
@@ -97,7 +98,7 @@ class LLMService:
                         "role": "user",
                         "content": f"其他错误: {type(e).__name__}，{str(e)}"
                     })
-                    continue
+                    return None
                     
                 current_code = answer["code"].strip()
                 if name not in current_code:
@@ -220,6 +221,43 @@ class LLMService:
             pos += 1  # 移动一个字符继续查找
             
         return count > threshold
+    @staticmethod
+    def __escape_latex__(text: str) -> str:
+        """Escape LaTeX expressions properly"""
+        # Common LaTeX commands that need escaping
+        latex_commands = [
+            r'\cdot', r'\frac', r'\sum', r'\prod', r'\int', r'\sqrt',
+            r'\alpha', r'\beta', r'\gamma', r'\delta', r'\epsilon',
+            r'\leftarrow', r'\rightarrow', r'\leq', r'\geq',
+            r'\exists', r'\forall', r'\in', r'\subset',
+            r'\cup', r'\cap', r'\wedge', r'\vee',
+            r'\mathbb', r'\mathcal', r'\mathrm',
+            r'\left', r'\right', r'\big', r'\Big',
+            r'\text', r'\infty'
+        ]
+        
+        # First save all LaTeX expressions
+        latex_blocks = []
+        def save_latex(match):
+            latex_blocks.append(match.group(0))
+            return f"LATEX_BLOCK_{len(latex_blocks)-1}"
+        
+        # Save LaTeX blocks (both inline and display)
+        text = re.sub(r'\\\((.*?)\\\)|\\\[(.*?)\\\]', save_latex, text, flags=re.DOTALL)
+        
+        # Process each LaTeX block
+        for i, block in enumerate(latex_blocks):
+            # Double escape LaTeX commands
+            for cmd in latex_commands:
+                # Avoid double escaping already escaped commands
+                block = re.sub(r'(?<!\\)' + re.escape(cmd), '\\' + cmd, block)
+            latex_blocks[i] = block
+        
+        # Restore LaTeX blocks in one pass
+        for i, block in enumerate(latex_blocks):
+            text = text.replace(f"LATEX_BLOCK_{i}", block, 1)
+        
+        return text
 
     def __processStreamResponse__(stream, isStream=True):
         """处理流式响应，收集完整回复"""
@@ -250,8 +288,8 @@ class LLMService:
                 full_reasoning = chunk.choices[0].message.reasoning_content.replace('&lt;', '<').replace('&gt;', '>')
                 full_content = chunk.choices[0].message.content.replace('&lt;', '<').replace('&gt;', '>')
         
-        print("full_content:\n%s", full_content)
-
+        print("full_content:\n", full_content)
+        full_content = LLMService.__escape_latex__(full_content)
         return {"reasoning": full_reasoning.strip(), "content": full_content.strip()}, hasRepeat
 
     @staticmethod
