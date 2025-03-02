@@ -73,10 +73,10 @@ class LLMService:
                         "content": response["content"],
                     })
                     if hasRepeat:
-                        print("\n检测到重复代码")
+                        print("\n你进入逻辑混乱的死循环状态了，非常危险，请重新思考正确答案。")
                         messages.append({
                             "role": "user",
-                            "content": "你进入逻辑混乱的死循环状态了，非常危险，请重新思考正确答案。"
+                            "content": "你一直在重复生成相同的代码，完全错误，请修改答案。",
                         })
                         continue
                     print("\n解析前的JSON字符串:", answer)
