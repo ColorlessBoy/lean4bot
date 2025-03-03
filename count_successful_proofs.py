@@ -18,7 +18,7 @@ def is_proof_successful(file_path: Path) -> bool:
 
 def main():
     # Get the directory containing the JSON files
-    root_dir = Path(__file__).parent / "TestDeepseekR1"
+    root_dir = Path(__file__).parent / "TestDeepseekV3"
     
     # Count files and successful proofs
     total_files = 0
