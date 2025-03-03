@@ -10,7 +10,7 @@ def is_proof_successful(file_path: Path) -> bool:
             # Look for the last message
             for msg in reversed(data):
                 if msg.get("role") == "user":
-                    return "证明完全正确" in msg.get("content", ""), len(data)
+                    return "证明完全正确" in msg.get("content", ""), len(data), "连续3次生成重复代码" in msg.get("content", "")
         return False, 0
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
@@ -18,7 +18,7 @@ def is_proof_successful(file_path: Path) -> bool:
 
 def main():
     # Get the directory containing the JSON files
-    root_dir = Path(__file__).parent / "TestDeepseekV3"
+    root_dir = Path(__file__).parent / "TestDeepseekR1"
     
     # Count files and successful proofs
     total_files = 0
@@ -26,11 +26,12 @@ def main():
     success_length = 0
     base_length = len(initPrompt)
     success_count_zero_shot = 0
+    repeat_times = 0
     
     # Process each JSON file
     for file in root_dir.glob("*.json"):
         total_files += 1
-        success, length = is_proof_successful(file)
+        success, length, is_repeat = is_proof_successful(file)
         if success:
             successful_proofs += 1
             success_length += (length - base_length)
@@ -38,6 +39,8 @@ def main():
                 success_count_zero_shot += 1
             print(f"✓ {file.name}")
         else:
+            if is_repeat:
+                repeat_times += 1
             print(f"✗ {file.name}")
     
     # Calculate and display statistics
@@ -48,6 +51,7 @@ def main():
     print(f"Success rate: {success_rate:.2f}%")
     print(f"Average length: {success_length / successful_proofs:.2f}")
     print(f"Zero-shot successes: {success_count_zero_shot}")
+    print(f"Repeat times: {repeat_times}")
 
 if __name__ == "__main__":
     main()
