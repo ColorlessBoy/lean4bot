@@ -10,7 +10,7 @@ def is_proof_successful(file_path: Path) -> bool:
             # Look for the last message
             for msg in reversed(data):
                 if msg.get("role") == "user":
-                    return "证明完全正确" in msg.get("content", ""), len(data), "连续3次生成重复代码" in msg.get("content", "")
+                    return "证明完全正确" in msg.get("content", ""), len(data), "连续3次生成重复代码" in msg.get("content", ""), "上一题你证明正确。请听下一题(请注意回答的code字段代码要保持原题目不变，不要忽略小于号）" in msg.get("content", "")
         return False, 0
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
@@ -18,7 +18,7 @@ def is_proof_successful(file_path: Path) -> bool:
 
 def main():
     # Get the directory containing the JSON files
-    root_dir = Path(__file__).parent / "TestDeepseekR1"
+    root_dir = Path(__file__).parent / "TestQianwenPlus"
     
     # Count files and successful proofs
     total_files = 0
@@ -30,8 +30,8 @@ def main():
     
     # Process each JSON file
     for file in root_dir.glob("*.json"):
-        total_files += 1
-        success, length, is_repeat = is_proof_successful(file)
+        success, length, is_repeat, invalid = is_proof_successful(file)
+        total_files += 0 if invalid else 1
         if success:
             successful_proofs += 1
             success_length += (length - base_length)

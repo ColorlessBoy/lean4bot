@@ -7,9 +7,9 @@ from tqdm import tqdm
 with open("theorems.json", "r", encoding="utf-8") as f:
     theorems = json.load(f)
 
-root = Path(__file__).parent / "TestDeepseekR1"
+root = Path(__file__).parent / "TestQianwenPlus"
 
-aliyunService = LLMService("TestDeepseekR1")
+aliyunService = LLMService("TestQianwenPlus")
 
 for theorem in tqdm(theorems):
     output = root / (theorem["name"] + ".json")

@@ -8,17 +8,17 @@ import re
 import argparse
 import hashlib
 
-"""
 # 阿里云 
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-MODEL_NAME = "deepseek-r1"
+MODEL_NAME = "qwen-max-latest"
 """
 # 火山云 
 API_KEY = os.getenv("ARK_API_KEY")
 BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
 # MODEL_NAME = "deepseek-v3-241226"
 MODEL_NAME = "deepseek-r1-250120"
+"""
 
 class LLMService:
     def __init__(self, name: str, projectPath: str = None):
@@ -57,7 +57,6 @@ class LLMService:
                     messages=messages,
                     stream=True,
                     temperature=0.6,
-                    max_tokens=16384,
                 )
                 
                 # 添加调试日志
