@@ -11,7 +11,7 @@ import hashlib
 # 阿里云 
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-MODEL_NAME = "qwen-max-latest"
+MODEL_NAME = "qwq-plus-latest"
 """
 # 火山云 
 API_KEY = os.getenv("ARK_API_KEY")
@@ -212,9 +212,23 @@ class LLMService:
                 print("堆栈跟踪:")
                 import traceback
                 traceback.print_exc()
-                break
+                return None
                 
         return messages
+    @staticmethod
+    def __hasSorry__(content: str) -> bool:
+        """检查是否存在连续的sorry模式"""
+        # 定义可能的sorry模式
+        sorry_patterns = [
+            r'sorry\s*:=\s*by\s*sorry',  # 匹配 'sorry := by sorry'
+            r'by\s*sorry\s*$',           # 匹配以 'by sorry' 结尾
+            r':=\s*by\s*sorry\s*$'       # 匹配以 ':= by sorry' 结尾
+        ]
+        
+        for pattern in sorry_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                return True
+        return False
     
     def __hasRepeat__(content: str, window = 100, threshold = 10) -> bool:
         if len(content) <= window * threshold:
@@ -258,6 +272,9 @@ class LLMService:
                     if LLMService.__hasRepeat__(full_content):
                         print("\n检测到重复内容，终止流式处理")
                         hasRepeat = True
+                        break
+                    elif LLMService.__hasSorry__(full_content):
+                        print("\n检测到sorry，终止流式处理")
                         break
             else:
                 # 非流式处理
